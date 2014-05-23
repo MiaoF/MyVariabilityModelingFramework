@@ -114,7 +114,7 @@ public class DocumentProfile {
 
 	private void printWithCollectionAndMap(ArrayList<String> collection, HashMap<String, Integer> map) {
 		int index = 0;
-		double threshold = 1;
+		double threshold = 2;
 		double counter = 0;
 		double totalHits = 0;
 		double numbersBiggerThanthreshold = 1;
