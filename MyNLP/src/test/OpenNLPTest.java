@@ -37,8 +37,8 @@ public class OpenNLPTest {
 //			parseByPOS("all.txt");
 			
 			
-			parseBySentences("AllThreeFull.txt");
-			parseByPOS("AllThreeFull.txt");
+//			parseBySentences("AllThreeFull.txt");
+			parseByPOS("example.txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -83,6 +83,7 @@ public class OpenNLPTest {
 				addToProfile(subject + "-" + verb, profile.getSubjectVerbs(),
 						profile.getSubjectVerbCollection());
 			}
+			
 			if (!verb.isEmpty() && !objects.isEmpty() && notStopWords(verb)) {
 				addToProfile(subject, profile.getObjects(),
 						profile.getObjectCollection());
