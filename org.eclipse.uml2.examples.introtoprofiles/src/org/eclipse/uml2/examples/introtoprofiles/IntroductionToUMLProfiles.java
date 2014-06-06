@@ -219,6 +219,7 @@ public class IntroductionToUMLProfiles {
 			.getOwnedType("Supplier");
 		Property pendingOrdersProperty = supplierClass.getOwnedAttribute(
 			"pendingOrders", null);
+		System.out.println("=========================look at me==============" + pendingOrdersProperty);
 		applyStereotype(pendingOrdersProperty, eReferenceStereotype);
 		Property shippedOrdersProperty = supplierClass.getOwnedAttribute(
 			"shippedOrders", null);

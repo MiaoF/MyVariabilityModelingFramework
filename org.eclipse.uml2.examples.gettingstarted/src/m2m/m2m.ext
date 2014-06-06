@@ -1,0 +1,52 @@
+import uml;
+import MySampleProfile; 
+
+/**
+ * Predicate that checks for stereotype presence
+ * - FIXME: Check if derived stereotypes are recognized as well
+ */
+Boolean hasStereotype(Element element, String stereotypeId) :
+		JAVA xtendTools.uml.Tools.hasStereotype(org.eclipse.uml2.uml.Element, java.lang.String)
+	;
+
+/**
+ * Return the tagged value of a stereotyped element
+ */
+Object getTaggedValue(Element element, String stereotypeId, String taggedValue) :
+		JAVA xtendTools.uml.Tools.getTaggedValue(org.eclipse.uml2.uml.Element, java.lang.String, java.lang.String)
+	;
+
+/**
+ * Filter list of elements for stereotyped elements
+ * - FIXME: Check if derived stereotypes are recognized as well
+ */
+List[Object] selectStereotype(List[Object] in, String stereotype) :
+		in.select(feature | feature.hasStereotype(stereotype))
+	;
+
+
+/**
+ * Return all owned elements that are of a given type
+ */
+List[Object] getOwnedElementType(Model in, xpand2::Type type) :
+		in.allOwnedElements().typeSelect(Class)
+	;
+
+
+
+
+/* Transformation */ 
+
+transform2Ecore(Model m) : transformModel(m);
+
+		
+
+
+create PModel transformModel(Model in) :
+		children.addAll(selectStereotype(getOwnedElementType(in, uml::Class), "MySampleProfile::PClass").transformClass())
+	;
+
+
+create PClass transformClass(Class in) :
+		this.setIdType(getTaggedValue(in, "MySampleProfile::PClass", "idType"))
+	;
