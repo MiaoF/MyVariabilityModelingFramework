@@ -1,0 +1,1489 @@
+2	Overview
+The DM is responsible for the delivery of materials, namely for the removal of stored TUs that carry material. A stock removal has as aim one of the two goods out of the WA01 and WA02 warehouses.
+It is also important that a delivery can consist of several positions. The exact description of deliveries is described in more detail in Section 3.1.
+2.1	Functional Model
+As part of the DM, the user is offered dialogs with the following possibilities with regard to deliveries. Note here that changes and deletions are possible only for non-released, and thus inactive, deliveries and positions:
+•	Create new deliveries (incl. stock removal date)
+•	Change existing deliveries (priority, stock removal date)
+•	Delete existing deliveries 
+•	Manually released existing deliveries 
+•	Cancel an active delivery
+
+In reference to delivery positions:
+•	Create new delivery positions and assignment to existing deliveries
+•	Change existing delivery positions (quantity, material, etc.)
+•	Delete existing delivery positions 
+
+Because of the given situations, the SILOC system intervenes actively in the DM and can so perform the following actions:
+•	Identification of a delivery as not deliverable because of missing materials
+•	Release low priority deliveries
+
+  
+Figure 1: Overview of UseCases
+2.2	Component Structure
+The DM as component lies within the server.
+ 
+Figure 2: Component structure
+As the diagram shows, the DM uses 
+•	The infrastructure component for each database action
+•	The transport control to request transports of TUs
+•	The material management to find the required material and to reserve for stock removals
+
+The two ControlCenter and HostInterface components wait and monitor the DM while the server is running.
+Interactions of the client are passed directly to the DM using dialogs.
+
+Two dialogs are provided for the use of the DM from the client viewpoint – one for deliveries and one for delivery positions.
+3	Analysis Model
+The DM consists internally of three main components:
+•	DeliveryManagement – management of the deliveries and their positions, and respond to events that result in state changes.
+This subcomponent is a platform component.
+•	GoodsOut – responsible for collecting the events of the SILOC server system (TU has been moved, transport order was completed, etc.) and the initiation of events in the DeliveryManagement. GoodsOut is also responsible for the material finding and reservation.
+This subcomponent is solution-specific because the material reservation and the material finding can also be defined differently.
+•	DeliveryManagementPresenter – similar to the presenter of other server components, the client calls arrive here and are synchronized with the server thread.
+ 
+Figure 3: Internal structure
+
+3.1	Data Model (Static Model)
+3.1.1	Structure of a Delivery
+A delivery consists of at least one position (DeliveryPos) that makes a statement about the material and the quantity to be removed. Each delivery is assigned to a final location and reserves a special DeliveryLoc during the stock removal. 
+A DeliveryLoc is a special location in the warehouse responsible for the various work associated with stock removals.
+Each DeliveryPos consists of at least one DeliveryPick where a DeliveryPick refers to a TU (using TuPos).
+The following figure shows the data model:
+ 
+Figure 4: Data model
+Each delivery has a priority. The higher the priority, the more important is the order. This means deliveries with higher priority are processed earlier than others. If the priority is equal, the deliveries will be processed arbitrarily without any guarantee of the sequence.
+Each DeliveryPos also has a priority (see delivery priority). This is important within a delivery. This means when several positions are present, it can be decided which should be removed first.
+This is, for example, important with regard to the loading sequence on a truck.
+The sequence in accordance with priorities will be replaced by the type of the removal, because picking orders must always be processed first. (Aim: Order picking persons should have as much to do as possible)
+3.1.2	Special Locations for the DeliveryManagement
+3.1.2.1	Warehouse aisles
+The warehouse aisles contain the TUs that contain material and so can be removed in the form of a delivery .
+3.1.2.2	Point of no overtake
+When a DeliveryPick has reached this location (DreamFactory: HRL1MP13), it can no longer be overtaken subsequently by other newly created transports. This ensures the sequence in accordance with the priorities.
+If a delivery has more than one position whose priorities are identical, this point "within" the delivery is not important.
+With regard to several deliveries, this point is important for the type when the last DeliveryPick of the higher priority delivery has reached this point, another delivery can be processed.
+3.1.2.3	Complete removal locations
+The DreamFactory has three of these points: HRL1WA01, HRL1WA02, HRLWA03
+These locations collect over ejection sections all positions of a delivery (where each delivery will be assigned to maximum one of these sections). Which then are moved from fork lifts to the actual goods out.
+These three locations are contained in the DeliveryLoc table (see Figure 4).
+3.1.2.4	Order picking locations
+The DreamFactory has one such point: HRL1EP02
+TUs of a DeliveryPick that travel to this location possess more material than actually required. This means that the required material must be removed here at this location. 
+
+3.2	Dynamic Model
+3.2.1	States of the Deliveries, Delivery Positions and Delivery Picks
+The deliveries, the positions and the picks pass through a series of states.
+3.2.1.1	Delivery
+ 
+Figure 5: State machine of the deliveries
+A delivery begins initially in the Open state. The user can decide at the time of creating a delivery whether it is to be activated manually or via a timer. If a delivery is to be activated manually, the FREE_DATE field must remain empty at the time of creation. In this case, the delivery changes, once the user has released it, to the Free state. The second way of activating a delivery is to use a timer. This requires that the FREE_DATE field is assigned when the delivery is created. Once the user has released the delivery, it changes to the Activateable state and can be set in the Free state when the timer activation date is overshot.
+In this moment, the required material is determined and so determined whether sufficient material for the "complete" delivery is present. If this is not the case, the delivery changes to the Lackofmat state.
+When material is once again added to the warehouse, those deliveries in the Lackofmat state will be re-released should they require this material.
+If sufficient material is present, the delivery locations will be reserved and the state changes to Processing.
+In the case that the transport control reports a transport error during a DeliveryPick, the delivery changes to the Faulty state. This state is notified to the user using the message system. This allows the user to decide whether the complete delivery should be canceled or whether the error should be corrected. In the latter case, the DeliveryManagement waits for the message that the transport was completed successfully. The delivery state so changes to the Finished state.
+3.2.1.2	DeliveryPos
+ 
+Figure 6: State machine of the DeliveryPos
+Refer to: Figure 5 and Section 3.2.1.1
+When a DeliveryPick arrives at the required warehouse location it will be considered as being complete. When all picks of a position are complete, this will also be closed. The same is also true for all positions in a delivery itself.
+In addition, when all picks of a position are complete, these picks, the associated TuPos references and all TUs will be removed from the database. The goods out is so empty and the TU data no longer present in the database.
+3.2.1.3	DeliveryPick
+ 
+Figure 7: State machine of the DeliveryPicks
+3.2.2	Overview of the State Changes
+	Delivery	DeliveryPos	DeliverPick
+Create Delivery	OPEN (new)		
+Create DeliveryPos		OPEN (new)	
+Enable Delivery
+ (with FREE_DATE)	OPEN  ACTIVATEABLE		
+Timer	ACTIVATEABLE  FREE		
+Cancel Delivery	[OPEN|FREE|FAULTY]
+ CANCELED	
+
+[OPEN|FREE|FAULTY]
+ CANCELED]*	
+Process Free Delivery	
+FREE  PROCESSING		[FREE (new)]*
+
+Transport Accepted		
+
+FREE  PROCESSING	FREE  PROCESSING
+TU Moved			PROCESSING  POINTOFNOOVERTAKE
+Transport Completed	
+
+[PROCESSING|FAULTY]FINISHED (all Pos finished?)	
+[PROCESSING|FAULTY]FINISHED (all Picks finished?)	[POINTOFNOOVERTAKE|FAULTY]FINISHED
+Process Free Delivery	
+
+
+FREELACKOFMAT	
+
+FREELACKOFMAT	[FREE (new)]*
+(not enough material)
+
+3.3	Interface Description
+The DM component represents itself in its interface structure as follows:
+ 
+Figure 8: Interfaces of the DeliveryManagement
+3.3.1	IDeliveryManagementPresenter
+This interface represents the presenter that is called from the user dialog via WCF. It provides all management operations (such as create, change, delete) and action operations for the release and cancelation of deliveries.
+ 
+Figure 9: IDeliveryManagementPresenter
+3.3.2	IGoodsOut
+This interface is mainly used by DM itself to bring additional deliveries for removal.
+ 
+Figure 10: IGoodsOut interface
+It should be noted here that the CommissionStrategy property is used to perform the specific order picking solution (an automatic order picking occurs in the DreamFactory).
+3.3.3	ILifeCycle
+The DreamFactory server provides this interface and so offers all implementations a possibility to perform special actions during the start. The callback timer is initiated and started here during the start. After the expiration of a defined time, this timer checks whether free deliveries should be made available for processing.
+3.3.4	ITransportOrderStatus
+This interface is used to inform about transport order actions. Only two events are of interest here:
+•	Transport accepted – this causes the state change of a DeliveryPick from FREE  PROCESSING
+•	Transport completed – which either leads to the order picking and for the forwarding of the TUs at the complete acceptance location for the goods out.
+3.3.5	IPhysicStatus
+With this interface, the DM receives information about TU movements within the warehouse. Only one event is of interest here:
+•	TU has been moved – after the check that this TU belongs to a delivery, it will be determined whether the Point of no overtake has been reached. This is important for the initiation of further transport requests of other DeliveryPicks.
+4	Design Specification
+4.1	Synchronizer and Proxies
+Because the execution of the DeliveryManagement component should run within the same thread, like all other non-thread safe components (such as GoodsIn, transport control, etc.), attention must be paid to various rules for the access:
+- Invocation from the presenter (invocation from WCF) comes from non-managed threads. They also require, however, return values. Consequently, this thread must be call-synchronized.
+- The callback timer of the GoodsOut invokes itself. This should result in a call that should run in the business logic thread. This means a proxy must be offered for the GoodsOut part.
+- The GoodsOut calls state-changing methods at the DeliveryManagement. This requires the guarantee that the business logic thread is used here and the call chain (because otherwise circular calls result) is interrupted.
+The graphic below shows the relationship between proxies and the synchronizer:
+ 
+Figure 11: Synchronizer and proxies of the DeliveryManagement
+4.2	Class Structure
+ 
+Figure 12: Class structure of the DeliveryManagement
+Three packages exist within the component:
+- The DeliveryManagement itself
+- Classes for material finding and strategies
+- The GoodsOut
+The latter is largely solution-specific and so contained in the DreamFactory server. The GoodsOut class is the consumer of the events of the following interfaces:
+- ILifecycle (start and stop of the component)
+- ITransportStatus (acceptance and completion of transport orders)
+- IPhysicStatus (movements of TUs)
+The GoodsOut class also uses the transport control to issue transport orders.
+The material finding strategies use the material management.
+4.3	Order Picking
+The solution-specific implementation of the GoodsOut uses an instance of the ICommissionStrategy interface. This interface can be used to implement an order picking behavior.
+If no strategy is present, the DeliveryPick ends at the EPoint. There, the dialog can be used to reduce the material on the TuPos and stock in again. 
+As an example implementation, the AutomaticCommissioningStrategy class exists that automatically creates a new TU with the required pick material (for example, on HRL1KP02) and sends it to the final location. In addition, the material of the arriving TU is accepted and stocked in again using the GoodsIn component.
+4.4	Dynamic Execution
+4.4.1	The Start
+At the start, a user uses the Delivery/DeliveryPos dialog to create deliveries and assign them to positions. When a delivery has been created, it can be released from the delivery dialog.
+It is also possible to release deliveries using a release date. In this case, a timer (cyclically every x seconds) checks for the expiration of the release date and, if true, releases the delivery. 
+ 
+Figure13: User interaction with the DeliveryManagement
+4.4.2	Location and Material Reservation
+If a free delivery finds sufficient material in the warehouse and a location for this is free (DeliveryLoc table), it will be determined how many picks will be created.
+Where: For each position, the number of created picks is also the number of the used TUs. 
+- Is the material for one position on just one TU  1 pick
+- Is the material for one position on just two TUs  2 picks
+- Is the material for one position assigned to two TUs where one contains too much  2 picks (one complete removal and one partial removal)
+…
+Once the picks have been created, they will be made known to the transport control in the form of transport orders.
+If there are several positions that have different priority, the high priority picks will be created first. When the last of the these picks has reached the point of no overtake, the picks of the next position will be notified to the transport control.
+ 
+Figure 14: Release and creation of the picks
+4.4.3	Acceptance of a Transport Order
+When a DeliveryPick has been notified to the transport control using a transport order, the transport control confirms this order with an event (TransportAccepted).
+The associated DeliveryPick changes to the Processing state (and thus also the associated DeliveryPos).
+ 
+Figure 15: Acceptance of a DeliveryPick
+4.4.4	Movement of a TU
+When a TU within the warehouse moves from one location to another location, this will be notified in the form of an event (TuMoved). 
+The DeliveryManagement is interested only in the movements of those TUs associated with a DeliveryPick. When such a TU has now reached the point of no overtake, this results in the state change of the DeliveryPick to Noovertake. This allows additional picks not yet present in the form of a transport order to be processed.
+ 
+Figure 16: Movement of a TU
+4.4.5	Completion of a Transport Order
+When a TU has reached the destination specified by its transport order, the DeliveryManagement will be informed accordingly. This time, the DeliveryManagement is not only interested in the successful transporting of deliveries, but also in the stock-in actions. Namely, if a delivery does not have sufficient material (Lackofmat state), it could be re-released when a TU with the material has been stocked in.
+Otherwise, when the transport order represents a DeliveryPick, the DeliveryManagement determines the following situations:
+- Has the TU arrived at the final delivery location  DeliveryPick Finished
+- Has the TU arrived at the complete removal location  New transport order for the transport from this location to the final delivery location
+- Has the TU arrived at a picking location  DeliveryPick Finished
+ 
+Figure 17: Completion of a Transport Order
+4.5	Interface Description
+In addition to the interfaces described in the Interface chapter of the Overview documentation, there is also the IDeliveryManagementEvents interface. This is used (and mainly by the GoodsOut component) to provoke state changes to the deliveries, their positions and the picks. 
+ 
+Figure 18: IDeliveryManagementEvents
+Overview:
+•	AllDeliveryPositionsFinished  When all positions of a delivery have completed  Delivery state from PROCESSING  FINISHED
+•	DeliveryCanceled  Delivery state from PROCESSING  CANCELED
+•	DeliveryEnabled  A delivery has been released (manual or automatic)  Delivery state OPEN  FREE
+•	DeliveryFaulted  Whenever a pick for a delivery has not been transported correctly  State Delivery [*]  FAULTED
+•	MaterialForDeliveryReceived  A new delivery with the material reaches the storage locations  Delivery state LACKOFMAT  FREE
+•	NotEnoughMaterialFound  There is insufficient material for a pick  Delivery state FREE  LACKOFMAT
+•	PicksCreated  All picks have been created successfully  Delivery state FREE  PROCESSING
+•	PointOfNoOvertakeReached  A DeliveryPick has reached the point of no overtake  DeliveryPick state PROCESSING  NOOVERTAKE
+•	TransportAccepted  A DeliveryPick will be sent on its way  DeliveryPick state FREE  PROCESSING
+•	TransportCompleted  A Delivery Pick has been successfully transported to the end  DeliveryPick state NOOVERTAKE  FINISHED (when all picks of a position are complete, the position will be ended)
+4.6	Installation and Generating Concept
+As for other SILOC Platform components, the exceptions and messages of the DM will be created automatically using the build management with the generate target.
+5	Test
+Because the DeliveryManagement consists of both platform and solution components, the integration tests of the DeliveryManagement can be found inside the DreamFactory solution. In addition, the DreamFactory server will be started for each integration test that contains the DM.
+5.1	Module Tests
+Within the implementation of the DeliveryManagement, there is no need to write module tests because the execution can essentially be covered sufficiently with integration tests.
+5.2	Integration and System Tests
+The basis for the integration and system tests of the DeliveryManagement is a collection of UseCases described in the following sections.
+5.2.1	Creating an Order
+5.2.1.1	UC_GOODSOUT_DELIVERY_CREATE_100
+Precondition:
+The client main dialog is active.
+Sequence:
+1.	The user opens the Delivery dialog (DLV) from the control room.
+2.	The user clicks the "Create" button.
+3.	The system displays a Delivery dialog.
+4.	The user specifies the following value and confirms the input:
+a.	Priority = 2
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+5.	The system creates a new delivery with the specified data and displays the new list, including the new delivery, in the Delivery dialog.
+Post-condition:
+		A stock-out order (delivery) has been created.
+5.2.1.2	UC_GOODSOUT_DELIVERY_UPDATE_100
+Precondition:
+The client main dialog is active.
+The stock-out order from 1.1 has been created.
+Sequence:
+1.	The user opens the Delivery dialog (DLV) from the control room.
+2.	The user selects the stock-out order created in 1.1.
+3.	The user clicks the "Edit" button.
+4.	The system displays a Delivery dialog.
+5.	The user changes the following value and confirms the input:
+a.	Priority = 1
+b.	Final destination = WA02
+6.	The system changes the specified data for the selected stock-out order and displays the new list, including the changed delivery, in the Delivery dialog.
+Post-condition:
+The stock-out order (delivery) has been changed.
+5.2.1.3	UC_GOODSOUT_DELIVERY_POSITION_CREATE _100
+Precondition:
+The client main dialog is active.
+The stock-out order from 1.1. is present newly created or changed under 1.2.
+At least one material is present in the system.
+Sequence:
+1.	The user opens the Delivery position dialog (DLP) from the control room.
+2.	The user clicks the "Create" button.
+3.	The system displays a Delivery position dialog.
+4.	The user specifies the following value and confirms the input:
+a.	Delivery = the Id of the stock-out order from 1.1
+b.	Position = 1
+c.	Priority = 2
+d.	Material = any material
+e.	Quantity = 144
+5.	The system creates a new delivery position with the specified data and displays the new list, including the new delivery position, in the Delivery position dialog.
+Post-condition:
+		A stock-out order position (delivery position) has been created.
+5.2.1.4	UC_GOODSOUT_DELIVERY_POSITION_UPDATE _100
+Precondition:
+The client main dialog is active.
+The stock-out order position from 1.3 has been created.
+Sequence:
+1.	The user opens the Delivery position dialog (DLP) from the control room.
+2.	The user selects the stock-out order position created in 1.3.
+3.	The user clicks the "Edit" button.
+4.	The system displays a Delivery position dialog.
+5.	The user changes the following value and confirms the input:
+a.	Priority = 1
+b.	Quantity = 12
+6.	The system changes the specified data for the selected stock-out order position and displays the new list, including the changed delivery position, in the Delivery position dialog.
+Post-condition:
+The stock-out order position (delivery position) has been changed.
+5.2.1.5	UC_GOODSOUT_DELIVERY_POSITION_DELETE_100
+Precondition:
+The client main dialog is active.
+The stock-out order position from 1.3 has been created or is present changed from 1.4.
+Sequence:
+1.	The user opens the Delivery position dialog (DLP) from the control room.
+2.	The user selects the stock-out order position created in 1.3.
+3.	The user clicks the "Delete" button.
+4.	The system displays a Delete dialog.
+5.	The user confirms this dialog:
+6.	The system deletes the selected stock-out order position and displays a list without the changed delivery position in the Delivery position dialog.
+Post-condition:
+The stock-out order position (delivery position) has been deleted.
+5.2.1.6	UC_GOODSOUT_DELIVERY_DELETE_100
+Precondition:
+The client main dialog is active.
+The stock-out order from 1.1 has been created or is present changed from 1.2.
+Sequence:
+1.	The user opens the Delivery dialog (DLV) from the control room.
+2.	The user selects the stock-out order created in 1.1.
+3.	The user clicks the "Delete" button.
+4.	The system displays a Delete dialog.
+5.	The user confirms this dialog:
+6.	The system deletes the selected stock-out order and displays a list without the deleted order in the Delivery dialog.
+Post-condition:
+The stock-out order (delivery) has been deleted.
+5.2.2	Stocking-out a Single Order
+5.2.2.1	UC_GOODSOUT_RETRIEVE_DELIVERY_100
+An order with a position should be stocked out. This position fits exactly on a pallet.
+Precondition:
+The client main dialog is active.
+There is just one pallet in the warehouse that contains five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The system searches for the required material from the first position and reserves it on the above-mentioned pallet.
+8.	The system creates a TORD for the pallet and moves it from the warehouse to one of the goods out locations.
+9.	When the pallet arrives at the goods out location, a new TORD from this to the WA01 location will be created.
+10.	A fork lift truck driver transports the pallet as described under X.X to the WA01.
+11.	When the pallet arrives at the WA01, the system sets the associated order position to the "FINISHED" state.
+12.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its position are in the "FINISHED" state.
+The pallet mentioned as preconditions is located on the WA01.
+5.2.2.2	UC_GOODSOUT_RETRIEVE_DELIVERY_101
+An order with a position should be stocked out. This position fits exactly on two pallets.
+Precondition:
+The client main dialog is active.
+There are just two pallets in the warehouse that contain five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 10
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The system searches for the required material from the first position and reserves it on the above-mentioned pallets.
+8.	The system creates a TORD for each of the pallets and moves them from the warehouse to one (both to the same) of the goods out locations.
+9.	When the pallet arrives at the goods out location, a new TORD from this to the WA01 location will be created.
+10.	A fork lift truck driver transports the pallet as described under X.X to the WA01.
+11.	When the pallet arrives at the WA01, the system sets the associated order position to the "FINISHED" state.
+12.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its position are in the "FINISHED" state.
+The pallets mentioned as preconditions are located on the WA01.
+5.2.2.3	UC_GOODSOUT_RETRIEVE_DELIVERY_102
+An order with two positions should be stocked out. Each of these positions fit exactly on a pallet. The order positions do not have different priorities.
+Precondition:
+The client main dialog is active.
+There is one pallet in the warehouse that contains five items of the material "cover, silk".
+There is another pallet in the warehouse that contains five items of the material "cushions, fine down".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user creates an additional delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 2
+c.	Priority = 1
+d.	Material = "cushion, fine down"
+e.	Quantity = 5
+4.	The user changes to the Delivery dialog.
+5.	The user selects the order created in 1.
+6.	The user clicks the "Release" button.
+7.	The system changes the state of the order and all its positions to "FREE".
+8.	The system searches for the required material from the first position and reserves it on the first above-mentioned pallet.
+9.	The system searches for the required material from the second position and reserves it on the second above-mentioned pallet.
+10.	The system creates a TORD for the first pallet and allows the controller to move it from the warehouse to one of the goods out locations.
+11.	The system creates a TORD for the second pallet and also allows the controller to move it from the warehouse to the same goods out location as for point 10.
+12.	When the pallet arrives at the goods out location, a new TORD from this to the WA01 location will be created.
+13.	A fork lift truck driver transports the pallet as described under X.X to the WA01.
+14.	When the pallet arrives at the WA01, the system sets the associated order position to the "FINISHED" state.
+15.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its positions are in the "FINISHED" state.
+The pallets mentioned as preconditions are located on the WA01.
+5.2.2.4	UC_GOODSOUT_RETRIEVE_DELIVERY_103
+An order with two positions should be stocked out. Each of these positions fit exactly on two pallets. The order positions have different priorities.
+Precondition:
+The client main dialog is active.
+There are two pallets in the warehouse that contain five items of the material "cover, silk".
+There are two other pallets in the warehouse that contain five items of the material "cushions, fine down".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 2
+d.	Material = "cover, silk"
+e.	Quantity = 10
+3.	The user creates an additional delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 2
+c.	Priority = 1
+d.	Material = "cushion, fine down"
+e.	Quantity = 10
+4.	The user changes to the Delivery dialog.
+5.	The user selects the order created in 1.
+6.	The user clicks the "Release" button.
+7.	The system changes the state of the order and all its positions to "FREE".
+8.	The system searches for the required material from the first position and reserves it on the two first above-mentioned pallets.
+9.	The system searches for the required material from the second position and reserves it on the two second above-mentioned pallets.
+10.	The system creates a TORD for each of the two pallets that belong to the second position, and allows the controller to move them from the warehouse to one of the goods out locations.
+11.	When the second pallet from point 10 has reached the HRL1MP13 location (no overtaking can occur after this point), the system creates a TORD for each of the two pallets that belong to the first position, and also allows the controller to move it from the warehouse to the same goods out location as described under point 10.
+13.	When one of the pallets arrives at the goods out location, a new TORD from this to the WA01 location will be created.
+14.	A fork lift truck driver transports the associated pallet as described under X.X to the WA01.
+15.	When one pallet arrives at the WA01, the system sets the associated order position to the "FINISHED" state.
+16.	When all pallets are at WA01, the system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its positions are in the "FINISHED" state.
+The pallets mentioned as preconditions are located on the WA01. The two pallets with the material "cushion, fine down" are in front of the two pallets with the material "cover, silk".
+5.2.2.5	UC_GOODSOUT_RETRIEVE_DELIVERY_104
+An order with a position should be stocked out. This position does not fit exactly on a pallet. The required quantity is less than that on the pallet.
+Precondition:
+The client main dialog is active.
+There is just one pallet in the warehouse that contains five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 2
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The system searches for the required material from the first position and reserves it on the above-mentioned pallet.
+8.	The system creates a picking instruction (DELV-PICK).
+9.	The system creates a TORD for the pallet and allows the controller to move it from the warehouse to the order picking position (HRL1EP02).
+10.	When the pallet arrives at the order picking position, the operator removes the material listed in the DELV-PICK on a new pallet and confirms the removal.
+Note: The V2.0 implementation has an automatic order picking for this purpose that places a TU with the required material on KP02 and moves it to the final location. The arriving TU (with reduced goods) will also be stocked in the warehouse.
+11.	The system creates a new stock-in order (TORD) for the pallet from the HRL1EP02 back in the warehouse. The old storage location is not used, but rather a new storage location sought with the search for empty bin.
+12.	The conveyor system returns the pallet back in the warehouse.
+13.	Because the order has been processed, a new TORD from the HRL1KP02 to the WA01 will be created.
+14.	A fork lift truck driver transports the new pallet as described under X.X to the WA01.
+15.	When the new pallet arrives at the WA01, the system sets the order position to "FINISHED".
+16.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its positions are in the "FINISHED" state.
+The pallet mentioned under preconditions is once again in the warehouse and still contains three items of the material "cover, silk". A new pallet is located on the WA01.
+5.2.2.6	UC_GOODSOUT_RETRIEVE_DELIVERY_105
+An order with a position should be stocked out. This position does not fit exactly on a pallet. The required quantity is larger than that on a pallet.
+Precondition:
+The client main dialog is active.
+There are two pallets in the warehouse that contain five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 8
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The system searches for the required material from the first position and reserves it on the above-mentioned pallets.
+8.	The system creates a picking instruction (DELV-PICK).
+9.	The system creates a TORD for one of the pallets and allows the controller to move it from the warehouse to the order picking position (HRL1EP02).
+10.	When the first pallet arrives at the HRL1MP13 location (no further overtaking is possible after this location), the system creates a TORD for the second pallet and allows the controller to move it to one of the goods out locations. 
+11.	When the first pallet arrives at the order picking position, the operator removes the material listed in the DELV-PICK on a new pallet and confirms the removal.
+Note: The V2.0 implementation has an automatic order picking for this purpose that places a TU with the required material on KP02 and moves it to the final location. The arriving TU (with reduced goods) will also be stocked in the warehouse. 
+12.	The system creates a new stock-in order (TORD) for the pallet from the HRL1EP02 back in the warehouse. The old storage location is not used, but rather a new storage location sought with the search for empty bin.
+13.	The conveyor system returns the pallet back in the warehouse.
+14.	Because the order has been processed, a new TORD from the HRL1KP02 to the WA01 will be created.
+15.	When the second pallet arrives at the goods out location, the system creates a new TORD from this to the WA01.
+16.	A fork lift truck driver transports the two pallets as described under X.X to the WA01.
+17.	When both pallets arrive at the WA01, the system sets the order position to "FINISHED".
+18.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its positions are in the "FINISHED" state.
+One of the pallets mentioned under preconditions is once again in the warehouse and still contains two items of the material "cover, silk". Both the other pallet and a new pallet are located on the WA01.
+5.2.2.7	UC_GOODSOUT_RETRIEVE_DELIVERY_106
+An order with two positions should be stocked out. Each of these positions does not fit exactly on a pallet. The required quantities are less than that on the pallets. The priorities of the positions are identical.
+Precondition:
+The client main dialog is active.
+There is one pallet in the warehouse that contains five items of the material "cover, silk".
+There is another pallet in the warehouse that contains five items of the material "cushions, fine down".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 2
+3.	The user creates an additional delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 2
+c.	Priority = 1
+d.	Material = "cushion, fine down"
+e.	Quantity = 2
+4.	The user changes to the Delivery dialog.
+5.	The user selects the order created in 1.
+6.	The user clicks the "Release" button.
+7.	The system changes the state of the order and all its positions to "FREE".
+8.	The system searches for the required material from the first position and reserves it on the first above-mentioned pallet.
+9.	The system creates a picking instruction (DELV-PICK).
+10.	The system searches for the required material from the second position and reserves it on the second above-mentioned pallet.
+11.	The system creates a picking instruction (DELV-PICK).
+12.	The system creates a TORD for one of the pallets and allows the controller to move it from the warehouse to the order picking position (HRL1EP02).
+13.	The system creates a TORD for the other pallet and allows the controller to move it from the warehouse to the order picking position (HRL1EP02).
+14.	The operator removes the required material from the first arriving pallet (the sequence of the pallets can vary) to the new pallet and confirms the removal.
+15.	For this pallet, the system generates a new "back in the warehouse" TORD. The old storage location is not used, but rather a new storage location sought with the search for empty bin.
+16.	The conveyor system returns the pallet back in the warehouse.
+17.	The operator removes the required material from the second arriving pallet to the new pallet and confirms the removal.
+Note: The V2.0 implementation has an automatic order picking for this purpose that places a TU with the required material on KP02 and moves it to the final location. The arriving TU (with reduced goods) will also be stocked in the warehouse.
+18.	Also for this pallet, the system generates a new "back in the warehouse" TORD. The old storage location is not used, but rather a new storage location sought with the search for empty bin.
+19.	The conveyor system returns the pallet back in the warehouse.
+20.	Because the order has been processed, a new TORD from the HRL1KP02 to the WA01 will be created.
+21.	A fork lift truck driver transports the new pallet as described under X.X to the WA01.
+22.	When the new pallet arrives at the WA01, the system sets the order position to "FINISHED".
+23.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its positions are in the "FINISHED" state.
+The pallets mentioned as preconditions are located once again in the warehouse. They now both each contain three items. A new pallet that contains the picked material is located at the WA01.
+5.2.2.8	UC_GOODSOUT_RETRIEVE_DELIVERY_107
+An order with two positions should be stocked out. Each of these positions does not fit exactly on a pallet. The required quantities are larger than that on the pallets. The priorities of the positions are not identical.
+Precondition:
+The client main dialog is active.
+There are two pallets (A, B) in the warehouse that contain five items of the material "cover, silk".
+There are two other pallets (C, D) in the warehouse that contain five items of the material "cushions, fine down".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 2
+d.	Material = "cover, silk"
+e.	Quantity = 8
+3.	The user creates an additional delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 2
+c.	Priority = 1
+d.	Material = "cushion, fine down"
+e.	Quantity = 8
+4.	The user changes to the Delivery dialog.
+5.	The user selects the order created in 1.
+6.	The user clicks the "Release" button.
+7.	The system changes the state of the order and all its positions to "FREE".
+8.	The system searches for the required material from the first position and reserves it on the two pallets A and B.
+9.	The system creates a picking instruction (DELV-PICK).
+10.	The system searches for the required material from the second position and reserves it on the two pallets (C and D).
+11.	The system creates a picking instruction (DELV-PICK).
+12.	The system creates a TORD for one of the pallets from the second position (C or D) and allows the controller to move it from the warehouse to the order picking position (HRL1EP02).
+13.	When the first pallet arrives at the HRL1MP13 location (no further overtaking is possible after this location), the system creates a TORD for the second pallet from the second position (D or C) and allows the controller to move it to one of the goods out locations. 
+14.	When this second pallet arrives at the HRL1MP13 location (no further overtaking is possible after this location), the system creates a TORD for one of the pallets from the first position (A or B) and allows the controller to move it from the warehouse to the order picking position (HRL1EP02).
+15.	When this third pallet arrives at the HRL1MP13 location (no further overtaking is possible after this location), the system creates a TORD for the fourth pallet (B or A) and allows the controller to move it to the same goods out location as for point 13.
+16.	When the first pallet (C or D (it must arrive before A or B)) arrives at the order picking position, the operator removes the required material from this to a new pallet E and confirms the removal.
+Note: The V2.0 implementation has an automatic order picking for this purpose that places a TU with the required material on KP02 and moves it to the final location. The arriving TU (with reduced goods) will also be stocked in the warehouse.
+17.	For this pallet, the system generates a new "back in the warehouse" TORD. The old storage location is not used, but rather a new storage location sought with the search for empty bin.
+18.	The conveyor system returns the pallet back in the warehouse.
+19.	Because all positions with high priority have been processed, a new TORD from the HRL1KP02 to the WA01 will be created.
+20.	A fork lift truck driver transports the pallet C or D as described under X.X to the order picking position for the WA01.
+21.	When the second pallet (A or B) arrives at the order picking position, the operator removes the required material from this to another new pallet E and confirms the removal.
+Note: The V2.0 implementation has an automatic order picking for this purpose that places a TU with the required material on KP02 and moves it to the final location. The arriving TU (with reduced goods) will also be stocked in the warehouse.
+22.	Also for this pallet, the system generates a new "back in the warehouse" TORD. The old storage location is not used, but rather a new storage location sought with the search for empty bin.
+23.	The conveyor system returns the pallet back in the warehouse.
+24.	Because all positions have been processed, a TORD for the second new pallet from the HRL1KP02 to the WA01 will be created.
+25.	When one of the pallets arrives at the goods out location, the system creates a new TORD from this to the WA01.
+26.	A fork lift truck driver transports the pallet D or C as described under X.X from the goods out location to the WA01. The system sets the second position to "FINISHED".
+27.	A fork lift truck driver transports the pallet A or B as described under X.X to the order picking position for the WA01.
+28.	A fork lift truck driver transports the pallet B or A as described under X.X from the goods out location to the WA01. The system sets the first position to "FINISHED".
+29.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its positions are in the "FINISHED" state.
+Two full pallets (C or D and A or B) and the two new pallets E and F are present at the WA01 in the sequence: C or D, E, A or B, F.
+The other two pallets (D or C and B or A) are each present once again in the warehouse. They now both each contain two items.
+5.2.2.9	UC_GOODSOUT_RETRIEVE_DELIVERY_108
+An order with a position should be stocked out. The required material is not present in the warehouse.
+Precondition:
+The client main dialog is active.
+There is no pallet in the warehouse that contains the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The system searches for the required material from the first position, but does not find any.
+8.	The system changes the state of the order and the first position to "LACKOFMAT".
+Post-condition:
+The stock-out order and its position are in the "LACKOFMAT" state.
+5.2.2.10	UC_GOODSOUT_RETRIEVE_DELIVERY_109
+An order with a position should be stocked out. The required material is not present in sufficient quantity in the warehouse. (Partial deliveries are not permitted.)
+Precondition:
+The client main dialog is active.
+There is one pallet in the warehouse that contains five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 8
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The system searches for the required material from the first position, but does not find sufficient.
+8.	The system changes the state of the order and the first position to "LACKOFMAT".
+Post-condition:
+The stock-out order and its position are in the "LACKOFMAT" state.
+
+5.2.2.11	UC_GOODSOUT_RETRIEVE_DELIVERY_110
+An order with two positions should be stocked out. One of required materials is not present in sufficient quantity in the warehouse. (Partial deliveries are not permitted.)
+Precondition:
+The client main dialog is active.
+There is one pallet in the warehouse that contains five items of the material "cover, silk".
+There is one pallet in the warehouse that contains three items of the material "cushions, fine down".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user creates another new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 2
+c.	Priority = 1
+d.	Material = "cushion, fine down"
+e.	Count = 5
+4.	The user changes to the Delivery dialog.
+5.	The user selects the order created in 1.
+6.	The user clicks the "Release" button.
+7.	The system changes the state of the order and all its positions to "FREE".
+8.	The system searches for the required material from the first position.
+9.	The system searches for the required material from the second position, but does not find sufficient.
+10.	The system changes the state of the order and the second position to "LACKOFMAT". The first position remains in the "FREE" state.
+Post-condition:
+The stock-out order and its second position are in the "LACKOFMAT" state. The first position is in the "FREE" state. It has not been stocked out.
+5.2.2.12	UC_GOODSOUT_CANCEL_DELIVERY_100
+An order (state FREE) that has not yet been begun should be canceled.
+Precondition:
+The client main dialog is active.
+There is one pallet in the warehouse that contains five items of the material "cover, silk".
+Sequence:	
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The user reselects the order created in 1. The system may not have set the order in the "PROCESSING" state.
+8.	The user cancels the order by clicking the "Cancel" button.
+9.	The system changes the state of the order and all its positions to "CANCEL".
+Post-condition:
+The stock-out order and all its positions are in the "CANCEL" state. It has not been stocked out. 
+5.2.2.13	UC_GOODSOUT_CANCEL_DELIVERY_101
+An order (state FREE) that has been begun should be canceled.
+Precondition:
+The client main dialog is active.
+There is one pallet in the warehouse that contains five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user changes to the Delivery dialog.
+4.	The user selects the order created in 1.
+5.	The user clicks the "Release" button.
+6.	The system changes the state of the order and all its positions to "FREE".
+7.	The system searches for the required material and reserves it on the mentioned pallet for the preconditions.
+8.	The system creates a TORD for the pallet and allows the controller to move it from the warehouse to one of the goods out locations.
+9.	The user reselects the order created in 1. The order may no longer have the "FREE" state.
+10.	The user attempts to cancel the order by clicking the "Cancel" button.
+11.	The dialog issues an error message. The order will be further processed.
+12.	When the pallet arrives at the goods out location, a new TORD from this to the WA01 location will be created.
+13.	A fork lift truck driver transports the pallet as described under X.X to the WA01.
+14.	When the pallets arrive at the WA01, the system sets the associated order to the "FINISHED" state.
+Post-condition:
+The stock-out orders and their positions are in the "FINISHED" state.
+The pallets mentioned as preconditions are located on the WA01.
+5.2.2.14	UC_GOODSOUT_ RESTART _DELIVERY_100
+For an order that has the "LACKOFMAT" state, the required material will be stocked into the warehouse. Its requirements can now be satisfied.
+Precondition:
+The client main dialog is active.
+There is no pallet in the warehouse that contains the material "cover, silk".
+There is one pallet at the WE01 that contains five items of the material "cover, silk".
+There is only one order with a position that requires five items of the material "cover, silk". This order is already in the "LACKOFMAT" state.
+Sequence:
+1.	A fork lift truck driver transports the pallet as described under X.X from the WE01 to the HRL1IP01.
+2.	The system creates a TORD for the pallet in the warehouse and allows the conveyor system to move it in.
+3.	When the pallet arrives in the warehouse, all order positions that have the "LACKOFMAT" state will be checked in priority sequence.
+4.	The system finds the order and its position mentioned under the preconditions and now makes another search for its required material and reserves it on the pallet mentioned under the preconditions.
+5.	The system creates a TORD for the pallet and moves it from the warehouse to one of the goods out locations.
+6.	When the pallet arrives at the goods out location, a new TORD from this to the WA01 location will be created.
+7.	A fork lift truck driver transports the pallet as described under X.X to the WA01.
+8.	When the pallet arrives at the WA01, the system sets the associated order position to the "FINISHED" state.
+9.	The system changes the state of the order to "FINISHED".
+Post-condition:
+The stock-out order and its position are in the "FINISHED" state.
+The pallet mentioned as preconditions is located on the WA01.
+5.2.2.15	UC_GOODSOUT_ RESTART _DELIVERY_101
+For an order that has the "LACKOFMAT" state, the required material will be stocked into the warehouse. Its requirements can, however, not be satisfied again.
+Precondition:
+The client main dialog is active.
+There is no pallet in the warehouse that contains the material "cover, silk".
+There is one pallet at the WE01 that contains five items of the material "cover, silk".
+There is only one order with a position that requires eight items of the material "cover, silk". This order is already in the "LACKOFMAT" state.
+Sequence:
+1.	A fork lift truck driver transports the pallet as described under X.X from the WE01 to the HRL1IP01.
+2.	The system creates a TORD for the pallet in the warehouse and allows the conveyor system to move it in.
+3.	When the pallet arrives in the warehouse, all order positions that have the "LACKOFMAT" state will be checked in priority sequence.
+4.	The system searches for the required material from the first position, but does not find sufficient.
+5.	The system keeps the state of the order and the first position as "LACKOFMAT".
+Post-condition:
+The stock-out order and its first positions are in the "LACKOFMAT" state.
+It has not been stocked out.
+
+5.2.3	Stocking Out Several Orders
+5.2.3.1	UC_GOODSOUT_RETRIEVE_DELIVERIES_100
+Two simple orders with the same priority should be stocked out.
+Precondition:
+The client main dialog is active.
+There are two pallets in the warehouse that contain five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 1
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user creates another new delivery as described under 1.1 with the following values:
+a.		Priority = 1
+b.		Start date = current date
+c.	Autom. release date = current date
+d.		Final destination = WA01
+4.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 3
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Count = 5
+5.	The user changes to the Delivery dialog.
+6.	The user selects the order created in 1.
+7.	The user clicks the "Release" button.
+8.	The system changes the state of the order and all its positions to "FREE".
+9.	The user selects the order created in 3.
+10.	The user clicks the "Release" button.
+11.	The system changes the state of the order and all its positions to "FREE".
+12.	The system searches for the material for the first order and reserves it on one of the two above-mentioned pallets.
+13.	The system creates a TORD for the first pallet and moves it from the warehouse to one of the goods out locations.
+14.	The system searches for the material for the second order and reserves it on the other of the two above-mentioned pallets.
+15.	The system creates a TORD for the second pallet and moves it from the warehouse to another goods out location.
+16.	When one of the pallets arrives at the goods out location, a new TORD from this location to the WA01 will be created. (This is true for both pallets!)
+17.	A fork lift truck driver transports the pallets as described under X.X to the WA01.
+18.	When the pallets arrive at the WA01, the system sets the associated order to the "FINISHED" state.
+Post-condition:
+The stock-out orders and their positions are in the "FINISHED" state.
+The pallets mentioned as preconditions are located on the WA01.
+5.2.3.2	UC_GOODSOUT_RETRIEVE_DELIVERIES_101
+Two simple orders with different priorities should be stocked out. Sufficient material for both orders is present.
+Precondition:
+The client main dialog is active.
+There are two pallets in the warehouse that contain five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 2
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user creates another new delivery as described under 1.1 with the following values:
+a.		Priority = 1
+b.		Start date = current date
+c.	Autom. release date = current date
+d.		Final destination = WA01
+4.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 3
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Count = 5
+5.	The user changes to the Delivery dialog.
+6.	The user selects the order created in 1.
+7.	The user clicks the "Release" button.
+8.	The system changes the state of the order and all its positions to "FREE".
+9.	The user selects the order created in 3.
+10.	The user clicks the "Release" button.
+11.	The system changes the state of the order and all its positions to "FREE".
+12.	The system searches for the material for the second order and reserves it on one of the two above-mentioned pallets.
+13.	The system creates a TORD for the pallet and moves it from the warehouse to one of the goods out locations.
+14.	When the first pallet arrives at the HRL1MP13 location (no further overtaking is possible after this location), the system searches for the material for the first order and reserves it on the other of the two above-mentioned pallets.
+15.	The system creates a TORD for the second pallet and moves it from the warehouse to another goods out location.
+16.	When one of the pallets arrives at the goods out location, a new TORD from this location to the WA01 will be created. (This is true for both pallets!)
+17.	A fork lift truck driver transports the pallets as described under X.X to the WA01.
+18.	When the pallets arrive at the WA01, the system sets the associated order to the "FINISHED" state.
+Post-condition:
+The stock-out orders and their positions are in the "FINISHED" state.
+The pallets mentioned as preconditions are located on the WA01.
+5.2.3.3	UC_GOODSOUT_RETRIEVE_DELIVERIES_102
+Two simple orders with different priorities should be stocked out. Sufficient material for only one of the two orders is present.
+Precondition:
+The client main dialog is active.
+There is one pallet in the warehouse that contains five items of the material "cover, silk".
+Sequence:
+1.	The user creates a new delivery as described under 1.1 with the following values:
+a.	Priority = 2
+b.	Start date = current date
+c.	Autom. release date = current date
+d.	Final destination = WA01
+2.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 1
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Quantity = 5
+3.	The user creates another new delivery as described under 1.1 with the following values:
+a.		Priority = 1
+b.		Start date = current date
+c.	Autom. release date = current date
+d.		Final destination = WA01
+4.	The user creates a new delivery position described under 1.3 with the following values:
+a.	Delivery = the Id of the stock-out order created under 3
+b.	Position = 1
+c.	Priority = 1
+d.	Material = "cover, silk"
+e.	Count = 5
+5.	The user changes to the Delivery dialog.
+6.	The user selects the order created in 1.
+7.	The user clicks the "Release" button.
+8.	The system changes the state of the order and all its positions to "FREE".
+9.	The user selects the order created in 3.
+10.	The user clicks the "Release" button.
+11.	The system changes the state of the order and all its positions to "FREE".
+12.	The system searches for the material for the second order and reserves it on one of the two above-mentioned pallets.
+13.	The system creates a TORD for the pallet and moves it from the warehouse to one of the goods out locations.
+14.	When the first pallet arrives at the HRL1MP13 location (no further overtaking is possible after this location), the system searches for the material for the first order but does not find any.
+15.	The system sets the state of the order and its position to "LACKOFMAT".
+16.	When the pallet arrives at the goods out location, a new TORD from this location to the WA01 will be created.
+17.	A fork lift truck driver transports the pallet as described under X.X to the WA01.
+18.	When the pallet arrives at the WA01, the system sets the associated order to the "FINISHED" state.
+Post-condition:
+The second stock-out order and its positions are in the "FINISHED" state.
+The first stock-out order and its positions are in the "LACKOFMAT" state.
+The pallet mentioned as preconditions is located on the WA01.
+6	Traceability
+This chapter describes the traceability of the implementation of the services and dialogs of the DeliveryManagement declared in the functional design specification. The aim is to use the declared components to find the appropriate code fragments for the integration and system tests.
+6.1	SVC_DELV_ACT_DETERMINE
+6.1.1	Inclusion
+UC - Activate delivery automatically (UC_DELV_AUT_ACTIVATE)
+SVC - Determine deliveries for the activation (SVC_DELV_ACT_DETERMINE)
+SVC - Change delivery data (SVC_DELV_UPDATE)
+
+Inclusion of the service:
+The use case describes the automatic activation of a delivery.
+
+Initiator:
+Cyclical call of the service (SVC_DELV_ACT_DETERMINE).
+
+Operator dialog:
+DLG_DELV_EDIT (indirect)
+
+ 
+Figure 19: SVC_DELV_ACT_DETERMINE
+6.1.2	Description
+The service is used to find deliveries activateable at runtime and activate them appropriately. To allow a delivery to be activated automatically, its release date must lie in the past.
+To allow the test to function, a timer repeatedly calls the service and compares the release time with the current time.
+
+This service does not have any dialog. The Edit dialog (DLG_DELV_EDIT) is used. This allows deliveries to be created/changed and so given a special release date.
+6.1.3	Implementation
+The implementation of the cyclical occurrence is made using a timer based on the .net Framework. This is initially set to a time interval with the DELIVERY_ACTIVATION_INTERVAL system parameter. (Important: This will be altered for a change at runtime only after a server restart!)
+
+This timer is located in the DeliveryActivationTimer class. The implementation of the ILifecycle interface initiates and starts the timer at the server startup, and stops the timer at shutdown. 
+
+When the time interval expires, all activateable deliveries (state: ACTIVATEABLE) will be sought. They will then be released by the synchronizer of the DeliveryManagement.
+6.1.4	Integration Test
+This service has an explicit integration test: UC_GOODSOUT_ACTIVATE_DELIVERIES_100 (See Chapter 3).
+A delivery is given a release date here. When the timer exceeds this date, this delivery will be passed for release to the DeliveryManagement. The test is made using the database.
+6.1.5	System Test
+This service has a system test: TST_WA_006. This uses the above-mentioned dialog for creating and changing deliveries.
+6.1.6	Overview
+Service	Classes	Integration Tests	System Tests
+SVC_DELV_ACT_DETERMINE	DeliveryActivationTimer.cs	UC_GOODSOUT_ACTIVATE
+_DELIVERIES	TST_WA_006
+
+
+
+Introduction
+1.1	Objective of the Document
+This specification provides an introduction to the goods in. It is aimed at both the platform developers and the developers of the solutions derived from the platform.
+
+1.2	Scope of the Document
+This document covers only the SILOC Platform software development but not the other components of the SILOC solution family (SILOC marketing platform, SILOC solution support and SILOC solution development).
+
+1.3	Basis for the Document
+
+No.	Document	Alias	Version 
+1	SILOC Platform – Requirements
+Authors: Daniel Ahrens, Reinhold Debald, Georg Leyh
+Issue date: 26.04.2007
+File: SILOC_Pflichtenheft.pdf	Functional design specification	V1.0
+2	SILOC Architecture Overview
+Author: Georg Leyh
+Issue date: 09.03.2009
+File: SILOC_Architekturübersicht.pdf		V2.0
+3	SILOC Build Concept
+Author: Victor Sauermann
+Issue date: 28.10.2008
+File: SILOC_Buildkonzept.pdf		V0.2
+4	SILOC Feature List
+Author: Mirko Janetschke
+Issue date: 25.02.2009
+Build version: 5525
+File: SILOC_Featureliste.xls		V0.3
+
+5	SILOC System Test
+Author: Jens Mrosek
+Issue date: 18.02.2009
+File: SILOC_Systemtest.pdf		V0.8
+
+1.4	Definitions and Abbreviations
+see /2/
+
+2	Goods-In Scenarios
+2.1	Prerequisite
+Points 2.1.1 and 2.1.2 are the basic prerequisites for the goods-in use cases.
+Point 2.1.3 explains the print label topic in more detail. This appears in several use cases.
+2.1.1	Creating an Order for Storage (Notification)
+Precondition:
+The client main dialog is active.
+Sequence:
+1.	The user opens the Notification dialog (NOT) from the control room.
+2.	The user clicks the "Create" button.
+3.	The system displays a modal Notification dialog.
+4.	The user specifies the status and the supplier, and clicks OK.
+5.	The system creates a new notification with the specified data and displays the new list, including the new notification, in the Notification dialog.
+Post-condition:
+	A storage order (notification) has been created.
+2.1.2	Creating a Storage Order Position (NotificationPos)
+Precondition:
+A storage order (notification) has been created.
+The client main dialog is active.
+Sequence:
+1.	The user opens the NotificationPosition dialog (NOT_POS) from the control room.
+2.	The user clicks the "Create" button.
+3.	The system displays a modal NotificationPosition dialog.
+4.	The user enters as mandatory fields, the created storage order, the material, the storage order position status, the expected amount (Amount_Exp) and as type, the selection Mass (overall storage order), and then clicks OK.
+5.	The system creates a new NotificationPos (storage order position) with the specified data and displays the new list, including the new notification position, in the NotificationPosition dialog.
+Post-condition:
+       A new storage order position (NotificationPos) has been created.
+
+
+
+2.1.3	Print Label
+The following use cases include the "Print label" service.
+The starting point here is a generated 10-character TUName. This name is converted into hexadecimal and forwarded as UTF8 encoding to the label. These created labels are printed, as shown below.
+
+ 
+Figure 1: Label
+
+2.2	UC_GOODS_IDENTIFICATION_100
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user selects a notification position with a mouse click.
+4.	The system determines the still open amount for this notification position and displays this in the Remaining amount field.
+5.	The user selects a transport type.
+6.	The user specifies a specific amount to be stocked for the notification position.
+7.	The user selects a stock placement location.
+8.	The user clicks the "Create TU" button.
+9.	The system (client) supplies the TUType, stocked amount and goods-in location information to the server.
+10.	The system (server) creates a unique TuName.
+11.	The system (server) creates a TU with the created TuName.
+12.	The system (server) increases the number of the supplied amount in the storage order position.
+13.	The system (server) signals the successful creation of a TU by passing the TuName of the created TU to the client.
+14.	The system (server) determines the printer and uses the passed TuName to print the label (see 2.1.3, Print Label).
+15.	The system (client) displays a window with the created TuName.
+16.	The user attaches the printed label to the transport unit.
+17.	The user confirms the message by clicking the OK button.
+18.	The system (client) forwards the information to the server.
+19.	The system (server) moves the TU into the warehouse.
+
+Post-condition:
+       The Goods In dialog is displayed.
+
+2.3	UC_GOODS_IDENTIFICATION_101 – Display of the storage order positions adapted using filter function
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user uses one of the filter states or Id of the storage order.
+4.	The system displays the changed filtered view.
+5.	Continue, as in UC_GOODS_IDENTIFICATION_100 from step 3.
+Post-condition:
+       The Goods In dialog is displayed.
+2.4	UC_GOODS_IDENTIFICATION_102 – Display the storage order position after using the filter is empty
+Precondition:
+The user has a storage order position identifier not present in the system.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user uses one of the filters for the Id of the storage order position, and enters a value that does not exist.
+4.	The system displays the empty view.
+5.	The system leaves the buttons gray or without function, other than refresh, close and new.
+Post-condition:
+       The Goods In dialog is displayed.
+2.5	UC_GOODS_IDENTIFICATION_103 – The user attempts to stock in an excessive amount
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user selects a notification position with a mouse click.
+4.	The system determines the still open amount for this notification position and displays this in the Remaining amount field.
+5.	The user selects a transport type.
+6.	The user specifies in the "Amount" field a specific amount of material to be stocked for the notification position. This amount, together with the already stocked amount of the storage order position, exceeds the expected amount of the storage order position.
+7.	The user selects a stock placement location.
+8.	The user clicks the "Create TU" button.
+9.	The system (client) supplies the TUType, stocked amount and goods-in location information to the server.
+10.	The system (server) creates a unique TuName.
+11.	The system (server) creates a TU with the created TuName.
+12.	The system (server) increases the number of the supplied amount in the storage order position.
+13.	The system (server) determines the printer and uses the passed TuName to print the label.
+14.	The system (client) displays a message with the created TuName.
+15.	The user attaches the printed label to the transport unit.
+16.	The user confirms the message by clicking the OK button.
+17.	The system (client) forwards the information to the server.
+18.	The system (server) moves the TU into the warehouse.
+19.	The system (client) displays a negative residual amount in the Residual amount field.
+Post-condition:
+       The Goods In dialog is displayed.
+
+2.6	UC_GOODS_IDENTIFICATION_104 – The user attempts to stock in material, one or more mandatory fields are empty
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user selects a notification position with a mouse click.
+4.	The system determines the still open amount for this notification position and displays this in the Remaining amount field.
+5.	The user clicks the "Create TU" button.
+6.	The system checks the Storage order position mandatory fields in the list, TUType, amount and station, and notes that not all mandatory fields are filled and does not initiate any action. (Does not activate the “Create TU” button.)
+Post-condition:
+       The Goods In dialog is displayed.
+2.7	UC_GOODS_IDENTIFICATION_106 – No storage order position with Ready or Processing status 
+Precondition:
+A storage order has been created.
+No storage order position has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The system searches for storage order positions with the Ready or Processing status.
+4.	The system does not display any storage order entries in the table.
+Post-condition:
+       The Goods In dialog is displayed.
+ 
+
+2.8	UC_GOODS_IDENTIFICATION_107 – The TU will be moved to the target warehouse location
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user selects a notification position with a mouse click.
+4.	The system determines the still open amount for this notification position and displays this in the Remaining amount field.
+5.	The user selects a transport type.
+6.	The user specifies a specific amount to be stocked for the notification position.
+7.	The user selects a stock location.
+8.	The user selects a target warehouse location.
+9.	The user clicks the "Create TU" button.
+10.	The system (client) supplies the TUType, stocked amount, goods-in location and target warehouse location information to the server.
+11.	The server checks the availability of the target warehouse location.
+12.	The system (server) creates a unique TuName.
+13.	The system (server) creates a TU with the created TuName.
+14.	The system (server) increases the number of the supplied amount in the storage order position.
+15.	The system (server) signals the successful creation of a TU by passing the TuName of the created TU to the client.
+16.	The system (server) determines the printer and uses the passed TuName to print the label (see 2.1.3, Print Label).
+17.	The system (client) displays a window with the created TuName.
+18.	The user attaches the printed label to the transport unit.
+19.	The user confirms the message by clicking the OK button.
+20.	The system (client) forwards the information to the server.
+21.	The system (server) moves the TU into the warehouse at the target warehouse location.
+
+Post-condition:
+       The Goods In dialog is displayed.
+ 
+
+2.9	UC_GOODS_IDENTIFICATION_108 – The specified target warehouse location is occupied
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user selects a notification position with a mouse click.
+4.	The system determines the still open amount for this notification position and displays this in the Remaining amount field.
+5.	The user selects a transport type.
+6.	The user specifies a specific amount to be stocked for the notification position.
+7.	The user selects a stock location.
+8.	The user selects a target warehouse location.
+9.	The user clicks the "Create TU" button.
+10.	The system (client) supplies the TUType, stocked amount, goods-in location and target warehouse location information to the server.
+11.	The server checks the availability of the target warehouse location.
+12.	The server reports the non-availability of the target warehouse location to the client.
+
+Post-condition:
+       The Goods In dialog is displayed.
+
+2.10	UC_GOODS_IDENTIFICATION_109 – The user ejects a TU
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready or Processing status.
+Sequence:
+1.	The user opens the Goods In dialog.
+2.	The user clicks Refresh to display all positions with storage orders.
+3.	The user selects a notification position with a mouse click.
+4.	The system determines the still open amount for this notification position and displays this in the Remaining amount field.
+5.	The user clicks the "Eject" button.
+6.	The system moves the TU to the ejection point.
+
+Post-condition:
+       The Goods In dialog is displayed.
+
+3	Automatic Goods In
+The automatic goods-in includes the station for the automatic acquisition of the supplied transport unit and the inspection station for the automatic goods in (IPointCheckDialog). For the automatic goods in, the system reads and checks the label on the TU (name of the TU). If the TU is not notified in the system, it will be ejected at the so-called NIO station. If this TU is notified in the system, the TU will be entered without any further checking of the content. Using an algorithm, one of the TUs to be stocked in automatically will be conveyed randomly to the goods-in inspection station. An employee there checks the content using the IPointCheckDialog and confirms the TU, corrects the content of the TU in the system or, indeed, ejects the TU from the system. After the successful inspection (TU OK or corrected), the user enters the TU into the system.
+The following use cases apply to the IPointCheckDialog (inspection station for the automatic goods in).
+3.1	UC_STOCK_QTY_CHECK_100	
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready status.
+A TU created in the system with linking to the storage order position.
+The supplied TU matches the notified position.
+According to the system, the TU is located at the inspection station.
+Sequence:
+1.	The user opens the dialog for the automatic goods in.
+2.	The user sets the focus to the TuId field, reads the label on the supplied TU with the label reader and presses the Return key to accept the read name.
+3.	The system supplies the storage order position and the TU information for this TuId and displays these in a list.
+4.	The user selects this position with a mouse click.
+5.	The user checks the supplied TU for completeness.  
+6.	The user clicks the "Stock in" button.
+7.	The system stocks-in the TU.
+
+Post-condition:
+       The Automatic Goods In dialog is displayed.
+3.2	UC_STOCK_QTY_CHECK_101 – The supplied TU does not match the notified position
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready status.
+A TU created in the system with linking to the storage order position.
+The supplied TU does not match the TuType, amount and material of the notified position.
+According to the system, the TU is located at the inspection station.
+Sequence:
+1.	The user opens the dialog for the automatic goods in.
+2.	The user sets the focus to the TuId field, reads the label on the supplied TU with the label reader and presses the Return key to accept the read name.
+3.	The system supplies the storage order position and the TU information for this TuId and displays these in a list.
+4.	The user selects this position with a mouse click.
+5.	The user checks the supplied TU for completeness.
+6.	The user sets the correct amount in the TuType, amount and material fields.  
+7.	The user clicks the "Change" button.
+8.	The system stores the changed data of the TU and reports the successful change to the user.
+9.	The system stocks-in the TU.
+Post-condition:
+       The Automatic Goods In dialog is displayed.
+3.3	UC_STOCK_QTY_CHECK_102 – The read TuId is not known to the system
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready status.
+The supplied TU is not present in the system.
+Sequence:
+1.	The user opens the dialog for the automatic goods in.
+2.	The user sets the focus to the TuId field, reads the label on the supplied TU with the label reader and presses the Return key to accept the read name.
+3.	The system does not supply any information for the TuId and the list remains empty.
+4.	The "Stock in" button is grayed-out.
+Post-condition:
+       The Automatic Goods In dialog is displayed.
+3.4	UC_STOCK_QTY_CHECK_103 – The user ejects a TU
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready status.
+A TU created in the system with linking to the storage order position.
+The supplied TU matches the notified position.
+According to the system, the TU is located at the inspection station.
+Sequence:
+1.	The user opens the dialog for the automatic goods in.
+2.	The user sets the focus to the TuId field, reads the label on the supplied TU with the label reader and presses the Return key to accept the read name.
+3.	The system supplies the storage order position and the TU information for this TuId and displays these in a list.
+4.	The user selects this position with a mouse click.
+5.	The system now offers the "Eject" button.
+6.	The user clicks the "Eject" button.
+7.	The system reports the information to the server and the TU will be ejected.
+Post-condition:
+       The Automatic Goods In dialog is displayed.
+3.5	UC_STOCK_QTY_CHECK_104 – The user specifies a target storage location	
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready status.
+A TU created in the system with linking to the storage order position.
+The supplied TU matches the notified position.
+According to the system, the TU is located at the inspection station.
+Sequence:
+1.	The user opens the dialog for the automatic goods in.
+2.	The user sets the focus to the TuId field, reads the label on the supplied TU with the label reader and presses the Return key to accept the read name.
+3.	The system supplies the storage order position and the TU information for this TuId and displays these in a list.
+4.	The user selects this position with a mouse click.
+5.	The user checks the supplied TU for completeness.
+6.	The user selects a target warehouse location.
+7.	The user clicks the "Stock in" button.
+8.	The system checks the availability of the target warehouse location.
+9.	The system stocks-in the TU.
+
+Post-condition:
+       The Automatic Goods In dialog is displayed.
+
+3.6	UC_STOCK_QTY_CHECK_106 – The specified target storage location is occupied	
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready status.
+A TU created in the system with linking to the storage order position.
+The supplied TU matches the notified position.
+According to the system, the TU is located at the inspection station.
+Sequence:
+1.	The user opens the dialog for the automatic goods in.
+2.	The user sets the focus to the TuId field, reads the label on the supplied TU with the label reader and presses the Return key to accept the read name.
+3.	The system supplies the storage order position and the TU information for this TuId and displays these in a list.
+4.	The user selects this position with a mouse click.
+5.	The user checks the supplied TU for completeness.
+6.	The user selects a target warehouse location.
+7.	The user clicks the "Stock in" button.
+8.	The system checks the availability of the target warehouse location.
+9.	The server reports the non-availability of the target warehouse location to the client.
+
+Post-condition:
+       The Automatic Goods In dialog is displayed.
+
+3.7	UC_STOCK_QTY_CHECK_107 – The TU is not at the goods-in control in the system
+Precondition:
+A storage order has been created.
+At least one storage order has been created that has the Ready status.
+The TU is present in the system.
+According to the system, the TU is not located at the goods-in inspection.
+Sequence:
+1.	The user opens the dialog for the automatic goods in.
+2.	The user sets the focus to the TuId field, reads the label on the supplied TU with the label reader and presses the Return key to accept the read name.
+3.	The system does not supply any information for the TuId and the list remains empty.
+Post-condition:
+       The Automatic Goods In dialog is displayed.
+
+4	Work Packages from the Functional Design Specification
+All changes to the work packages from the functional design specification are documented here.
+All dialogs and services in the functional design specification (FDS) that refer to the goods-in or automatic goods-in are listed here. Because they were not implemented as described in the FDS, the changes are documented here. The used names refer directly to the names of the dialogs and services in the functional design specification.
+4.1	DLG_GOODS_IDENTIFICATION
+This contains, rather than the host identification, the Status field of the storage order position as selection field.
+Rather than the TU type, the TU type description is displayed.
+
+ 
+Figure 2: GoodsIn dialog
+4.2	SVC_TU_IDENT_PRINT
+The processing instruction 1a was implemented so that the client must have installed one of the printers that has the same name as that configured in the database. An automatic selection of the client standard printer is not currently implemented.
+4.3	SVC_TU_IDENT_CREATE
+The creation of the TU identification in the first version did not conform to that described in the FDS. Instead, a random 20-character string is created in the GoodsIn class. This had the following reason: Agreement had not yet been reached on the format of the TU identification. However, the code was written so that a simple adaptation is possible.
+
+ 
+
+4.4	DLG_IPOINT_CHECK
+The TUP type is not displayed because the TU_POS table does not contain any Type field in this version.
+The "Correct amount" button has been renamed to "Change", because not only the amount, but also the TU type and the material, can be corrected for a TU.
+ 
+Figure 3: IPointCheck dialog
+
+4.5	SVC_GIU_TO_TU_TUP_CONVERT
+The processing instructions have changed for this work package compared to the functional design specification.
+Point 1a, "Creating a material", is omitted.
+2a was changed so that the ANE identification of the storage order position (NotificationPos) must be known. If this is the case, a TU (transport unit) is created with the ANE identification as TU identification.
+The remaining processing instructions 3a-6a for SVC_GIU_TO_TU_TUP_CONVERT remain valid without change.
+5	Search for Empty Bin
+The search for an empty bin is implemented via the StorageBinSearch. The following scenarios are used to demonstrate how the search for an empty bin functions.
+These scenarios show bin determination strategies that have been implemented project-specifically. The platform contains a pre-configured, parameterizable bin determination strategy. This is described in the following section.
+5.1	Component View
+ 
+Figure 4: Component view for empty bin search
+Several components work together when searching for an empty bin. The MaterialManagement component offers a service for storing transports. Part of this service is the determination and reserving of a suitable storage bin. This task is performed by the StorageBinSearch component. This is done with a solution-specific strategy for determining the storage bin and the bin then reserved using the ReservationLockSystem.
+To determine a suitable bin, the storage-specific strategy uses queries from the reservation system, the physic component and the material management.
+
+5.2	Scenarios
+5.2.1	Successful Empty Bin Search
+The diagram shows a successful empty bin search: the warehouse type in which the transport unit is to be stored is determined first. The aisles, bin and location determination then follows.
+A bin is found and the location pre-reserved.
+
+ 
+Figure 5: FreeSBFoundByFirstStrategy
+5.2.2	Successful Empty Bin Search with Two Strategies, the First Strategy Fails
+In this case, the first empty bin search fails, although the second bin search finds a result
+ 
+Figure 6: FreeSBFoundBySecondStrategy
+5.2.3	Empty Bin Search Fails
+Neither of the two search strategies finds an empty bin. In this case, an exception is generated and returned to the caller.
+ 
+Figure 7: NoFreeStorageBinFound
+ 
+
+5.3	Installation and Generating Concept
+See /3/
+
+5.4	Directory Structure
+For information about the sources, see /2/
+6	Parameterizable Empty Bin Search
+As part of the platform development, a parameterizable strategy has been implemented for the empty bin search. This strategy can be used to implement location determination scenarios whose characteristics of the container to be stored (e.g. container type, ABC class of the material in the container, height class of the container, fire class of the material in the container) are compared with the characteristics of the bin. Dedicated methods for the warehouse type determination and the aisle determination can also be added to the strategy.
+Two parameterization dialogs are provided to parameterize the strategy at runtime.
+The parameterizable empty bin search offers the following extension and parameterization capabilities:
+•	Warehouse type search
+A strategy for the warehouse type search can be implemented project-specific and added to the empty bin search.
+The demonstration solution uses the container type for determining the warehouse type: skeleton boxes and Europallets are stored in HRL1, plastic boxes in HRL2
+•	Aisle search
+A strategy for the aisle search can be implemented project-specific and added to the empty bin search.
+The demonstration solution uses a material equal distribution strategy.
+•	Search sequences for the storage bin determination
+So-called search sequences can be parameterized for the storage bin determination. A search sequence defines the parameters for containers and storage locations that influence the location determination and the weighting of these parameters with each other.
+•	Storage bin determination
+If the storage bin determination using the search sequence for the solution does not offer sufficient flexibility, a project-specific strategy for the bin determination can be used.
+•	Determination of the leading article 
+For article-unclean transport units, it is necessary to select a leading article, which, for example, is used to determine the ABC class. The determination of the leading article must be implemented project-specific and added to the storage bin determination.
+
+6.1	Component View
+The parameterizable determination strategy consists of the following components:
+ 
+ 
+The following components are involved in the parameterizable empty bin search:
+StorageBinSearch:
+This component represents the central access point for the empty bin determination for other parts of the application. It iterates over various strategies for the empty bin determination to determine an appropriate empty bin. If an empty bin is determined, this component is responsible for reserving the found bin.
+
+ParametrizableStorageBinSearchStrategy
+This component determines the currently parameterized warehouse type / aisles or bin strategy and performs this. It also forwards queries for the warehouse location determination (i.e. queries to determine a location within a bin that consists of several locations) to the suitable assignment sample strategy.
+
+WarehouseTypeManager
+The WarehouseTypeManager manages the aisle and bin strategy parameterized for a warehouse type and provides functions to change this parameterization.
+
+SearchSequenceManager
+The SearchSequenceManager manages all search sequences in the system and provides functions to change these.
+
+SearchSequenceStorageBinFinder
+This component determines the currently parameterized search sequence for a warehouse type and uses this parameterization to determine a suitable storage bin.
+
+The two presenter components also bind the appropriate manager components to the user interface.
+
+The two solution-specific finder components represent the strategies for the warehouse type and aisle determination used in the Dreamfactory.
+
+6.2	Database View
+ 
+The empty bin strategy is parameterized in the database to permit the switching of the strategies at runtime.
+The parameters assigned to a warehouse type (aisle strategy, bin strategy, search sequence) are stored in the WAREHOUSE_TYPE table.
+The AISLE_SEARCH_STRATEGY and BIN_SEARCH_STRATEGY tables contain all aisle and bin strategies available in the project.
+The search sequences are saved in a total of three tables. The BIN_SEARCH_SEQUENCE table contains all available strategies. The priority positions of a search sequence are stored in the BIN_SEARCH_SEQUENCE_POSITION table. The BIN_SEARCH_SEQUENCE_VALUE_COMBINATION table contains the possible value combinations for a priority position.
+6.3	User Interface
+Two dialogs are used to parameterize the empty bin search at runtime: one dialog allows search strategies and sequences to be parameterized for a warehouse type; the other dialog is used to maintain the search sequences.
+
+ 
+Figure 1: Dialog for the parameterization of search strategies and sequences
+ 
+Figure 2: Dialog for updating search sequences
+6.4	Dynamic
+ 
+To determine a warehouse type, the warehouse aisles or the storage bin, the parameterizable empty bin strategy determines the appropriate Finder from the WarehouseTypeManager which it uses to determine the appropriate warehouse element.
+ 
+During the storage bin determination, initially the valid search sequence for the warehouse type is determined. This search sequence consists of several prioritizers, each of which represents an individual aspect of the search strategy. Given the specification of a priority, a prioritizer is able to determine all bins, which based on the subaspect represented by the prioritizer possess this specified strategy.
+During the search for the locations, the PriorityIterator class is initially used to attempt to find an ideal storage location (i.e. each prioritizer queries bins with the highest priority). If no bin is found, a priority will be lowered and the query repeated. This continues until either no priority can be lowered further or no further bin can be determined with the lowest priority.
+
+7	Test
+
+7.1	Module Tests
+No module tests are performed.
+
+7.2	Integration and System Tests
+Two integration tests are performed for the goods in.
+They are located in Entwicklung\Plattform\Server\GoodsIn and Entwicklung\DreamFactory\Tests\GoodsInIntegrationTest.
+System tests are described in /5/.
+

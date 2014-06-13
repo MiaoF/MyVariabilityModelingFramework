@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Profile xmi:version="20110701" xmlns:xmi="http://www.omg.org/spec/XMI/20110701" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/4.0.0/UML" xmi:id="_17_0_5_b7c0230_1401974319909_594375_3366" name="shosh" URI="" metamodelReference="_17_0_5_b7c0230_1401974319909_312295_3367">
+  <eAnnotations xmi:id="_AfAIjuy1EeO4Rr5dVPYEIA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <contents xmi:type="ecore:EPackage" xmi:id="_AfAIj-y1EeO4Rr5dVPYEIA" name="shosh" nsURI="http:///schemas/shosh/_AdzzYOy1EeO4Rr5dVPYEIA/0" nsPrefix="shosh">
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_AfAIkOy1EeO4Rr5dVPYEIA" name="Miao">
+        <eAnnotations xmi:id="_AfAIkey1EeO4Rr5dVPYEIA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_17_0_5_b7c0230_1401974376184_594426_3421"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_AfAIkuy1EeO4Rr5dVPYEIA" name="base_Classifier" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/4.0.0/UML#//Classifier"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_AfAIlOy1EeO4Rr5dVPYEIA" name="TestAttr" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/4.0.0/Types#//String"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+    </contents>
+  </eAnnotations>
+  <ownedComment xmi:id="_17_0_5_b7c0230_1401974537676_531516_3447" annotatedElement="_17_0_5_b7c0230_1401974319909_594375_3366" body="TestProfile"/>
+  <packageImport xmi:id="_17_0_5_b7c0230_1401974319909_312295_3367">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_METAMODELS/UML.metamodel.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0primitiveTypesshosh">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0javaPrimitiveTypesshosh">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_17_0_5_b7c0230_1401974376184_594426_3421" name="Miao">
+    <ownedAttribute xmi:id="_17_0_5_b7c0230_1401974384187_397017_3423" name="base_Classifier" visibility="private" association="_17_0_5_b7c0230_1401974384187_814868_3422">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Classifier"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_17_0_5_b7c0230_1401974410725_76747_3445" name="TestAttr" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_17_0_5_b7c0230_1401974384187_814868_3422" name="" memberEnd="_17_0_5_b7c0230_1401974384187_397017_3423 _17_0_5_b7c0230_1401974384187_794256_3424" navigableOwnedEnd="_17_0_5_b7c0230_1401974384187_794256_3424">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_17_0_5_b7c0230_1401974384187_794256_3424" name="extension_" visibility="private" type="_17_0_5_b7c0230_1401974376184_594426_3421" aggregation="composite" association="_17_0_5_b7c0230_1401974384187_814868_3422">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_17_0_5_b7c0230_1401974384187_420321_3425" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_17_0_5_b7c0230_1401974384187_212749_3426" name="" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+</uml:Profile>
