@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Profile xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_17_0_5_b7c0230_1402045408839_196826_6283" name="Feature Configuration Editor Profile" URI="" metamodelReference="_0metamodelReferenceFeature_Configuration_Editor_Profile">
-  <eAnnotations xmi:id="_2iSX7-1ZEeOpSNK0uvWopw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-    <contents xmi:type="ecore:EPackage" xmi:id="_2iSX8O1ZEeOpSNK0uvWopw" name="FeatureConfigurationEditorProfile" nsURI="http:///schemas/FeatureConfigurationEditorProfile/_2AhGIe1ZEeOpSNK0uvWopw/0" nsPrefix="FeatureConfigurationEditorProfile">
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_2iSX8e1ZEeOpSNK0uvWopw" name="FeatureInstance">
-        <eAnnotations xmi:id="_2iSX8u1ZEeOpSNK0uvWopw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_17_0_5_b7c0230_1389626317539_176170_9693"/>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_2iSX8-1ZEeOpSNK0uvWopw" name="base_InstanceSpecification" ordered="false" lowerBound="1">
+<uml:Profile xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_17_0_5_b7c0230_1402045408839_196826_6283" name="Feature_Configuration_Editor_Profile" URI="" metamodelReference="_0metamodelReferenceFeature_Configuration_Editor_Profile">
+  <eAnnotations xmi:id="_yX2MofYoEeOfnuhD4D1QvQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <contents xmi:type="ecore:EPackage" xmi:id="_yX2MovYoEeOfnuhD4D1QvQ" name="Feature_Configuration_Editor_Profile" nsURI="http:///schemas/Feature_Configuration_Editor_Profile/_v63M0PYoEeOfnuhD4D1QvQ/0" nsPrefix="Feature_Configuration_Editor_Profile">
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_yX2Mo_YoEeOfnuhD4D1QvQ" name="FeatureInstance">
+        <eAnnotations xmi:id="_yX2MpPYoEeOfnuhD4D1QvQ" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_17_0_5_b7c0230_1389626317539_176170_9693"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_yX2MpfYoEeOfnuhD4D1QvQ" name="base_InstanceSpecification" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/4.0.0/UML#//InstanceSpecification"/>
         </eStructuralFeatures>
       </eClassifiers>
