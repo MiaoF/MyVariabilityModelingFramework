@@ -69,7 +69,7 @@ public class TopologyUmlReader {
 		if (args.length > 0)
 			filePath = args[0];
 		else
-			filePath = "models//sgm//SgmConfiguration.uml";
+			filePath = "models//sgm2//SgmConfiguration.uml";
 
 		filePath = new File(filePath).getAbsolutePath();
 

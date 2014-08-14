@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<workflow>
+ <!-- set up EMF for standalone execution -->
+ <bean class="org.eclipse.emf.mwe.utils.StandaloneSetup" platformUri=".." />
+
+ <!-- prepare for performing uml -->
+ <bean class="org.eclipse.xtend.typesystem.uml2.Setup" standardUML2Setup="true" />
+    
+ <!--UML2 Profile - Metamodell-->
+ <bean id="mm_topology_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.TopologyProfile.profile.uml"/>
+ </bean>
+ 
+  <!--UML2 Profile - Metamodell-->
+ <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.ProcessProfile.profile.uml"/>
+ </bean>
+ 
+   <!--UML2 Profile - Metamodell-->
+ <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.FeatureConfigurationProfile.profile.uml"/>
+ </bean>
+ 
+   <!--UML2 Profile - Metamodell-->
+ <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.WmsFeature.profile.uml"/>
+ </bean>
+
+<!-- load model and store it in slot 'model' -->
+<component class="org.eclipse.emf.mwe.utils.Reader">
+  <uri value="platform:/resource/eu.mvmf.uml2.generators/src/model/SgmConfiguration.uml" />
+  <modelSlot value="model" />
+</component>
+
+
+<component id="workflow-generator" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round0::Workflow::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src/workflow/workflow-gen">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+</workflow>
+
+
