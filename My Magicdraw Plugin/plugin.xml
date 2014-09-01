@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+	id="my.first.plugin" name="My First Plugin"
+	version="1.0" provider-name="Coder"
+	class="myplugin.MyPlugin1">
+		<requires>
+			<api version="1.0"/>
+		</requires>
+	<runtime>
+		<library name="myplugin.jar"/>
+	</runtime>
+</plugin>
