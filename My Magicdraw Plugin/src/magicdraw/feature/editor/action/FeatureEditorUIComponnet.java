@@ -48,11 +48,44 @@ public class FeatureEditorUIComponnet {
 				new CheckBoxNode("Browse in a new process", false) };
 
 		Vector browseVector = new NamedVector("Browsing", browsingOptions);
-		
-		
 		tree = new JTree(rootVector);
 		
 	}
+	public static void main(final String args[]) {
+        final DefaultMutableTreeNode root = new DefaultMutableTreeNode(new CheckBoxNodeData("Root",true));
+
+        final DefaultMutableTreeNode accessibility =
+            add(root, "Accessibility", true);
+        add(accessibility, "Move system caret with focus/selection changes", false);
+        add(accessibility, "Always expand alt text for images", true);
+        root.add(accessibility);
+
+        final DefaultMutableTreeNode browsing =
+            new DefaultMutableTreeNode(new CheckBoxNodeData("Browsing", null));
+        add(browsing, "Notify when downloads complete", true);
+        add(browsing, "Disable script debugging", true);
+        add(browsing, "Use AutoComplete", true);
+        add(browsing, "Browse in a new process", false);
+        root.add(browsing);
+
+        final CheckBoxTree tree = new CheckBoxTree(root);
+        ((DefaultMutableTreeNode)tree.getModel().getRoot()).add(new DefaultMutableTreeNode(new CheckBoxNodeData("gggg", null)));
+        ((DefaultTreeModel)tree.getModel()).reload();
+        // listen for changes in the selection
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(final TreeSelectionEvent e) {
+                //System.out.println("selection changed");
+            }
+        });
+        // show the tree on screen
+        final JFrame frame = new JFrame("CheckBox Tree");
+        final JScrollPane scrollPane = new JScrollPane(tree);
+        frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 150);
+        frame.setVisible(true);
+    }
 
 	
 	public void open() {
