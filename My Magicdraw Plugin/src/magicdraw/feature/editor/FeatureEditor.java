@@ -1,8 +1,7 @@
 package magicdraw.feature.editor;
 
+import magicdraw.feature.editor.action.BrowserContextConfigurator;
 import magicdraw.feature.editor.action.FeatureModelBrowserAction;
-import myplugin.BrowserContextConfigurator;
-import myplugin.SimplePluginAction;
 
 import com.nomagic.actions.ActionsCategory;
 import com.nomagic.magicdraw.actions.ActionsConfiguratorsManager;
@@ -18,20 +17,20 @@ public class FeatureEditor extends Plugin {
 
 	@Override
 	public void init() {
-		 try {
-	            ActionsCategory category = new ActionsCategory(null, null);
-	            category.addAction(new SimplePluginAction());
-	            category.addAction(new FeatureModelBrowserAction());
-	            ActionsConfiguratorsManager manager = ActionsConfiguratorsManager.getInstance();
-	            manager.addContainmentBrowserContextConfigurator(new BrowserContextConfigurator(category));
-	            Application.getInstance().getGUILog().log("[Simple Plugin] Loading OK");
-	            javax.swing.JOptionPane.showMessageDialog(null, "Feature Editor init");
-	        }
-	        catch (Exception e) {
-	            Application.getInstance().getGUILog().log(
-	                    "FeatureEditor Could not be instantiated : " + e.toString());
-	        }
-
+		try {
+			ActionsCategory category = new ActionsCategory(null, null);
+			category.addAction(new FeatureModelBrowserAction());
+			ActionsConfiguratorsManager manager = ActionsConfiguratorsManager.getInstance();
+			manager.addContainmentBrowserContextConfigurator(new BrowserContextConfigurator(category));
+			Application.getInstance()
+				.getGUILog().log("[Feature Editor Plugin] Loading OK");
+		} catch (Exception e) {
+			Application
+					.getInstance()
+					.getGUILog()
+					.log("FeatureEditor Could not be instantiated : "
+							+ e.toString());
+		}
 	}
 
 	@Override

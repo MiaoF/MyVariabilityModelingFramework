@@ -1,5 +1,6 @@
 package myplugin;
 
+import magicdraw.feature.editor.action.BrowserContextConfigurator;
 import magicdraw.feature.editor.action.FeatureModelBrowserAction;
 
 import com.nomagic.magicdraw.plugins.Plugin;
@@ -7,11 +8,6 @@ import com.nomagic.actions.ActionsCategory;
 import com.nomagic.magicdraw.actions.ActionsConfiguratorsManager;
 import com.nomagic.magicdraw.core.Application;
 
-/**
- * This class allows you to load your plugin in MagicDraw
- *
- * @author Xavier Seignard
- */
 public class MyPlugin extends Plugin {
 
     // Methods

@@ -1,69 +1,81 @@
 package magicdraw.feature.editor.action;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-
-import javax.swing.JOptionPane;
-
-import myplugin.CountingVisitor;
-import myplugin.SimplePluginBehavior;
-
-import com.nomagic.magicdraw.core.Application;
+import magicdraw.feature.editor.ui.FeatureEditorUIComponnet;
 import com.nomagic.magicdraw.core.Project;
-import com.nomagic.magicdraw.ui.MainFrame;
-import com.nomagic.magicdraw.ui.browser.Browser;
-import com.nomagic.magicdraw.ui.browser.BrowserTabTree;
 import com.nomagic.magicdraw.ui.browser.actions.DefaultBrowserAction;
 import com.nomagic.magicdraw.uml.BaseElement;
-import com.nomagic.magicdraw.uml.ClassTypes;
+import com.nomagic.magicdraw.uml.DiagramType;
+import com.nomagic.magicdraw.uml.symbols.DiagramPresentationElement;
 import com.nomagic.uml2.ext.jmi.helpers.StereotypesHelper;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Diagram;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.NamedElement;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Profile;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 
 public class FeatureModelBrowserAction extends DefaultBrowserAction {
 
 	private static final long serialVersionUID = 1L;
+	private Project project;
 
 	public FeatureModelBrowserAction() {
-		super("", "FeatureEditor", null, null);
+		super("", "Feature Configurator", null, null);
 	}
 
 	public void actionPerformed(ActionEvent actionEvent) {
-		Project project = Project.getProject((BaseElement) this.getSelectedObject());
-//		// find a profile
-//		Profile profile = StereotypesHelper.getProfile(project, "FeatureViewProfile");
-//		// find a stereotype
-//		Stereotype stereotype = StereotypesHelper.getStereotype(project,
-//				"FeatureNode", profile);
-		
-		Element e = (Element) this.getSelectedObject();
-		Stereotype featureNodeType = StereotypesHelper.getAppliedStereotypeByString(e, "FeatureNode");
-//		String classType = ClassTypes.getShortName(e
-//				.getAppliedStereotypeInstance().getClass());
-//		JOptionPane.showMessageDialog(null, e.get_relationshipOfRelatedElement().size());
-		FeatureEditorUIComponnet configUI = new FeatureEditorUIComponnet(e);
-		configUI.open();
+		project = Project.getProject((BaseElement) this.getSelectedObject());
+		Element selectedElement = (Element) this.getSelectedObject();
+		if (!isWmsLayoutDiagram(selectedElement)) {
+			new FeatureEditorUIComponnet(project, selectedElement);
+		} else {
+			Element rootFeature = findWmsRootFeature();
+			Diagram diagram = (Diagram) selectedElement;
+			FeatureEditorUIComponnet uicomponent = new FeatureEditorUIComponnet(project, rootFeature, diagram);
+			uicomponent.boundKnownVariability(selectedElement);
+		}
+	}
 
+	private Element findWmsRootFeature() {
+		Profile profile = StereotypesHelper.getProfile(project, "WmsFeature");
+		for(NamedElement e: profile.getMember()) {
+			if(e.getName().equalsIgnoreCase("SiemensWMS"))
+				return e;
+		}
+		return null;
 	}
 
 	/**
 	 * Defines when your action is available.
 	 */
 	public void updateState() {
-		// This action is only available when your click on an instance of
-		// Element in the containement tree
+		// Check whether the clicked
 		if (this.getSelectedObject() != null) {
 			Element e = (Element) this.getSelectedObject();
-			Stereotype featureNodeType = StereotypesHelper.getAppliedStereotypeByString(e, "FeatureNode");
+			Stereotype featureNodeType = StereotypesHelper
+					.getAppliedStereotypeByString(e, "FeatureNode");
 			if (featureNodeType != null) {
 				setEnabled(true);
-			} else {
+			} else if (isWmsLayoutDiagram(e))
+				setEnabled(true);
+			else
 				setEnabled(false);
-			}
 		} else {
 			setEnabled(false);
 		}
+	}
+
+	private boolean isWmsLayoutDiagram(Element e) {
+		if (e.getHumanType().equalsIgnoreCase("Diagram")) {
+			Diagram diagram = (Diagram) e;
+			DiagramPresentationElement diagramPresentationElement = Project
+					.getProject(diagram).getDiagram(diagram);
+			DiagramType diagramType = diagramPresentationElement
+					.getDiagramType();
+			if (diagramType.getType().equalsIgnoreCase("WmsOverviewLayout"))
+				return true;
+		}
+		return false;
 	}
 
 }
