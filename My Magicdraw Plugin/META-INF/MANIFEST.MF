@@ -9,5 +9,5 @@ Bundle-Vendor: Coder
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime;bundle-version="2.1",
  org.eclipse.core.runtime.compatibility
-Plugin-Class: myplugin.MyPlugin1
+Plugin-Class: eu.miaofang.md.examplePlugin.MyPlugin1
 Bundle-ActivationPolicy: lazy

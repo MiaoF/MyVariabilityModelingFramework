@@ -8,22 +8,22 @@
     
  <!--UML2 Profile - Metamodell-->
  <bean id="mm_topology_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.TopologyProfile.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.TopologyProfile.profile.uml"/>
  </bean>
  
   <!--UML2 Profile - Metamodell-->
  <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.ProcessProfile.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.ProcessProfile.profile.uml"/>
  </bean>
  
    <!--UML2 Profile - Metamodell-->
- <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.FeatureConfigurationProfile.profile.uml"/>
+ <bean id="mm_fc_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.FeatureConfigurationProfile.profile.uml"/>
  </bean>
  
-   <!--UML2 Profile - Metamodell-->
- <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.WmsFeature.profile.uml"/>
+  <!--UML2 Profile - Metamodell-->
+ <bean id="mm_meta_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/FeatureMetaModel.profile.uml"/>
  </bean>
 
 <!-- load model and store it in slot 'model' -->

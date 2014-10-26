@@ -3,8 +3,7 @@
 «IMPORT FeatureConfigurationProfile»
 «IMPORT WmsFeature»
 «DEFINE Root FOR uml::Model»
-«FILE "generator1.mwe"»  
-<?xml version="1.0"?>
+«FILE "generator1.mwe"»<?xml version="1.0"?>
 <workflow>
  <!-- set up EMF for standalone execution -->
  <bean class="org.eclipse.emf.mwe.utils.StandaloneSetup" platformUri=".." />
@@ -14,12 +13,12 @@
     
  <!--UML2 Profile - Metamodell-->
  <bean id="mm_topology_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.TopologyProfile.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.TopologyProfile.profile.uml"/>
  </bean>
  
   <!--UML2 Profile - Metamodell-->
  <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.ProcessProfile.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.ProcessProfile.profile.uml"/>
  </bean>
 
 <!-- load model and store it in slot 'model' -->
@@ -44,7 +43,7 @@
   <expand value="templates::round1::SgmPhysik::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
   <outlet path="src-gen/platform">
-  <!-- Assume it is in platform -->
+
    <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
@@ -56,12 +55,12 @@
   <expand value="templates::round1::PeriodicAction::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
   <outlet path="src-gen/Akl">
-   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
 «ENDIF»
-
 </workflow>
 «ENDFILE»
+
 «ENDDEFINE»
 

@@ -1,0 +1,1087 @@
+
+#	Anwender / Partnersystem	System
+1	SAP meldet das Material „Welle A47“ an.	System speichert die Stammdaten für Material „Welle A47“
+2	SAP meldet das Material „Welle B2“ an.	System speichert die Stammdaten für Material „Welle B2“
+3	SAP schickt die Auftragsankündigung A1.
+
+Es werden 20 Wellen A47 und 30 Wellen B2 avisiert.	System speichert die Avise.
+4	Ein Behälter mit 20 Wellen A47 und 30 Wellen B2 kommt am Wareneingangsstich an.
+Der Behälter enthält zwei Wareneingangsbelege, auf denen jeweils
+(Avise-Nummer, AvisePosition, Material, Menge) aufgedruckt sind.	
+5	Der Werker bestellt beim System ein hohes Tablar mit Aufsteckrahmen und zwei leeren Quadranten.	Das System bestätigt die Bestellung
+6	Der Werker bestellt beim System ein mittelhohes Tablar mit einem freien Quadranten.	Das System bestätigt die Bestellung
+7		Das System liefert ein hohes Tablar mit einem Aufsteckrahmen.
+8	Der Werker legt die 20 Wellen  A47 auf zwei Quadranten des Tablars.	
+9	Der Werker bestätigt, dass er 20 Wellen A47, gehörend zur Auftragsankündigung A1, auf das Tablar gelegt hat.	Das System druckt einen Warenbegleitbeleg.
+Inhalt: Sachnummer des Materials, Materialbezeichnung, Menge, Datum.
+10	Der Werker fordert die Abförderung des aktuellen Tablars beim System an.	Das System fördert das Tablar ab und lagert es ein.
+11		Das System liefert ein mittelhohes Tablar mit einem leeren Quadranten.
+12	Der Werker legt die 30 Wellen B2 auf den freien Quadranten	
+13	Der Werker bestätigt, dass er 30 Wellen B2 gehörend zu Auftragsankündigung A1, auf das Tablar gelegt hat.	
+14	Der Werker fordert die Abförderung des aktuellen Tablars beim System an	Das System fördert das Tablar ab und lagert es ein.
+15	Das erste Tablar kommt im Lagerfach an.	Das System quittiert gegenüber SAP die Aviseposition 20 Wellen A47 in A1.
+16	Das zweite Tablar kommt im Lagerfach an.	Das System quittiert gegenüber SAP die Aviseposition 30 Wellen B2 in A1.
+
+
+Offene Punkte:
+Platzermittlungsstrategie im AKL?
+
+
+AKL-002 Einlagern von avisiertem Material ins AKL (Konturenfehler)
+
+#	Anwender / Partnersystem	System
+1-9		
+10	Der Werker fordert die Abförderung des aktuellen Tablars beim System an.	Das System fördert das Tablar ab. Bei der Einlagerung wird ein Konturenfehler erkannt.
+11		Das System liefert ein mittelhohes Tablar mit einem leeren Quadranten.
+12	Der Werker legt die 30 Wellen B2 auf den freien Quadranten	
+13	Der Werker bestätigt, dass er 30 Wellen B2 gehörend zu Auftragsankündigung A1, auf das Tablar gelegt hat.	
+14	Der Werker fordert die Abförderung des aktuellen Tablars beim System an	Das System fördert das Tablar ab und lagert es ein.
+15		Das System fördert das erste Tablar zum Arbeitsplatz.
+Das System weist den Werker darauf hin, dass ein Konturenfehler vorliegt.
+16	Der Werker ordnet das Material auf dem Tablar neu. Dann fordert er eine erneute Einlagerung an.	
+17	Das zweite Tablar kommt im Lagerfach an.	Das System quittiert gegenüber SAP die Aviseposition 30 Wellen B2 in A1.
+18	Das erste Tablar kommt im Lagerfach an.	Das System quittiert gegenüber SAP die Aviseposition 20 Wellen A47 in A1.
+
+Offene Punkte (Nach 2.6., bis 2.6. gilt das beschriebene Szenario)
+Welche Alternativen hat der Werker bei einem Konturenfehler?
+Kann er das Tablar nur wieder wegfahren? Wird ein Klärdialog angezeigt, in dem auch Bestandsänderungen möglich sind?
+Wird gedruckt?
+
+AKL-003 Einlagern von avisiertem Material ins AKL (Gewichtsfehler)
+
+#	Anwender / Partnersystem	System
+1-9		
+10	Der Werker fordert die Abförderung des aktuellen Tablars beim System an.	Das System erkennt den Gewichtsfehler und fördert das Tablar nicht ab.
+Das System signalisiert den Gewichtsfehler dem Werker und fordert ihn auf, die letzte Einlagerung vom Tablar zu nehmen.
+11	Der Werker nimmt die komplette Einlagerung und den Wareneingangsbeleg vom Tablar.
+Er bestätigt den Vollzug beim System.	
+12	Der Werker fordert das Abfördern des aktuellen Tablars an.	Das System fördert das Tablar ab und lagert es ein.
+Ggf. kann der Werker auch eine Teilmenge zulagern. Um dies zu ermöglichen, wäre es nötig, dass man das Gewichtsdelta beim Gewichtsfehler anzeigt. Momentan überträgt die Steuerung das Wiegeergebnis nicht.
+13	Der Werker bestellt beim System ein hohes Tablar mit Aufsteckrahmen und zwei leeren Quadranten.	Wie wird sichergestellt, dass der Werker nicht exakt dasselbe Tablar wieder bekommt? Evtl. zufällig einen Treffer wählen. Klappt nicht bei genau einem passenden Tablar.
+	Weiterer Ablauf entsprechend.	
+
+Offene Punkte: (Nach 2.6.)
+Was passiert, wenn das System einen Gewichtsfehler feststellt?
+Macht der Werker die ganze Einlagerung Rückgängig und fordert ein neues Tablar an?
+
+AKL-004 Rücklagern von Tablaren ins AKL (Fach-Voll-Konflikt)
+
+#	Anwender / Partnersystem	System
+1	Der Werker fordert die Abförderung des aktuellen Tablars beim System an.	Das System fördert das Tablar ab und transportiert es ins Lager.
+2		Das System erkennt, dass der geplante Lagerplatz, auf den das Tablar eingelagert werden sollte, bereits belegt ist.
+3		Das System sperrt den geplanten Lagerplatz.
+4		Das System lagert das Tablar an einem anderen Lagerplatz ein.
+
+Offene Punkte:
+Wie sieht das Szenario aus, um die Sperre wieder aufzuheben?
+
+AKL-020 Einlagern von avisiertem Material ins AKL (Material wird gewogen)
+
+#	Anwender / Partnersystem	System
+1-6		
+7		Das System liefert ein hohes Tablar mit einem Aufsteckrahmen.
+8	Der Werker legt die 20 Wellen  A47 auf zwei Quadranten des Tablars.	
+9	Der Werker bestätigt, dass er 20 Wellen A47, gehörend zur Auftragsankündigung A1, auf das Tablar gelegt hat.	Das System fordert den Werker zum wiegen einer Welle auf.
+10	Der Werker wiegt eine Welle und gibt das Ergebnis ein	Das System druckt einen Warenbegleitbeleg.
+Inhalt: Sachnummer des Materials, Materialbezeichnung, Menge, Datum.
+11		Das System meldet die neuen Materialstammdaten (incl. Des neu gewogenen Gewichts) an SAP.
+	10-16	
+
+
+AKL-021 Einlagern von avisiertem Material ins AKL (Kein passender Behälter)
+
+#	Anwender / Partnersystem	System
+1-5		
+6	Der Werker bestellt beim System ein mittelhohes Tablar mit einem freien Quadranten.	Das System findet kein passendes Tablar. Es teilt dem Werker diese Tatsache als Fehlermeldung mit.
+6	Der Werker bestellt beim System ein hohes Tablar mit einem freien Quadranten.	Das System bestätigt die Bestellung
+
+Offene Punkte:
+Was macht der Werker, wenn kein hohes Tablar / kein Tablar mit Aufsteckrahmen gefunden wird? In diesem Fall kann er wahrscheinlich nicht ausweichen.
+
+
+
+AKL-022 Einlagern von avisiertem Material ins AKL (Umlagern auf dem Tablar)
+
+#	Anwender / Partnersystem	System
+1-6		
+7		Das System liefert ein hohes Tablar mit einem Aufsteckrahmen.
+	Der Werker stellt fest, dass er die Wellen nicht auf das Tablar legen kann, weil die beiden freien Quadranten nicht nebeneinander liegen.	
+	Der Werker legt das Material von einem Quadranten in einen anderen Quadranten, damit zwei angrenzende Quadranten frei werden.	
+	Der Werker informiert das System darüber, dass er Teile verschoben hat.	Das System speichert die Verschiebung und zeigt dem Benutzer die neue Situation an.
+8	Der Werker legt die 20 Wellen  A47 auf zwei Quadranten des Tablars.	
+9	Der Werker bestätigt, dass er 20 Wellen A47, gehörend zur Auftragsankündigung A1, auf das Tablar gelegt hat.	Das System druckt einen Warenbegleitbeleg.
+Inhalt: Sachnummer des Materials, Materialbezeichnung, Menge, Datum.
+10	Der Werker fordert die Abförderung des aktuellen Tablars beim System an.	Das System fördert das Tablar ab und lagert es ein.
+		
+
+
+
+AKL-023 Einlagern von avisiertem Material ins AKL (Zu wenig Material für Avise)
+Bei Unterlieferung muss der Werker bei der letzten Einlagerung markieren, dass die Avise fertig bearbeitet wurde. Sonst muss im Leitstandsdialog eine Avise nachträglich abgeschlossen werden
+
+AKL-024 Einlagern von avisiertem Material ins AKL (Zu viel Material für Avise)
+
+Überlieferungen sind nicht erlaubt und werden vom System negativ quittiert.
+
+AKL-005 Abarbeitung eines Auftrags (1 Auftragsposition, wird aus AKL befriedigt, kein Fehler)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt einen Auftrag A5
+Es handelt sich um eine Bestellung von 13 Wellen A4.
+	System speichert den Auftrag.
+2		Das System fährt Tablar 4 zum Arbeitsplatz 2.
+3		Das System zeigt den gesamten AKL-Umfang des Auftrags an:
+13 Wellen A4
+4	Der Werker entscheidet, dass er für den Auftrag eine Kommissionierbox verwendet.	
+5	Der Werker scannt die Kommissionierbox ab.	Das System druckt einen Begleitbeleg für die Kommissionierbox.
+6		Das System zeigt dem Werker an, dass er aus Quadrant 1 13 Wellen kommissionieren soll.
+7	Der Werker entnimmt die 13 Wellen vom Tablar und legt sie in die Kommissionierbox.
+Zur Bestätigung scannt er den Warenbegleitschein ein.	Bei bestimmten Aufträgen wird ein Einzelentnahmebeleg gedruckt.
+8	Der Werker fordert das Abfördern des Tablars an.	Das System lagert Tablar 4 wieder ein.
+9		Das System informiert den Werker über das Ende dieses Auftrags.
+10	Der Werker schiebt die Kommissionierbox in den Vertikalförderer.	Das System fördert den Behälter zum AKL-Entnahmestich.
+
+11		Das System meldet an SAP die Abarbeitung der ersten Position von Auftrag A5
+12		Das System druckt die Kommissionierliste am IPunkt.
+Inhalt:
+013 Wellen A4 (AKL)
+
+13	Ein IPunkt-Werker nimmt den Behälter vom Entnahmestich und stellt ihn auf die Zusammenführungs-Rollenbahn.	
+14	Ein (Zusammenführ-)Staplerfahrer nimmt sich die Kommissionierliste.
+Er holt die AKL-Umfänge und fährt diese in die Produktion.	
+
+Offene Fragen:
+Wie soll in diesem Fall die Zusammenführung ab 2.6. aussehen? Wird das Material vor der Auslieferung in eine Gitterbox umgepackt?
+
+AKL-006 Abarbeitung eines Auftrags (2 Auftragsposition, wird aus AKL befriedigt, Folgebehälter notwendig, kein Fehler)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt einen Auftrag A5
+Es handelt sich um eine Bestellung von 13 Wellen A4 und 57 Getrieberädern T2.
+	System speichert den Auftrag.
+2		Das System fährt Tablar 4 zum Arbeitsplatz 2.
+		Das System fährt Tablar 7 in den Tablarpuffer vor dem Arbeitsplatz
+3		Das System zeigt den gesamten AKL-Umfang des Auftrags an:
+13 Wellen A4
+57 Getrieberäder T2
+4	Der Werker entscheidet, dass er für den Auftrag eine Kommissionierbox verwendet.	
+5	Der Werker scannt die Kommissionierbox ab.	Das System druckt einen Begleitbeleg für die Kommissionierbox.
+6		Das System zeigt dem Werker an, dass er aus Quadrant 1 13 Wellen kommissionieren soll.
+7	Der Werker entnimmt die 13 Wellen vom Tablar und legt sie in die Kommissionierbox.
+Zur Bestätigung scannt er den Warenbegleitschein ein.	Bei bestimmten Aufträgen wird ein Einzelentnahmebeleg gedruckt.
+8	Der Werker fordert das Abfördern des Tablars an.	Das System lagert Tablar 4 wieder ein.
+9		Das System fährt Tablar 7 zum Arbeitsplatz 2.
+10		Das System zeigt dem Werker an, dass er aus Quadrant 3 57 Getrieberäder kommissionieren soll.
+11	Der Werker entscheidet, dass er für diese Entnahme eine weitere Kommissionierbox benötigt.
+Daher schiebt er seine jetzige Kommissionierbox in den Vertikalförderer	Das System fördert die Kommissionierbox zu einem Pufferplatz.
+12	Der Werker nimmt eine weitere Kommissionierbox und scannt diese ein.	Das System druckt einen Begleitbeleg für die Kommissionierbox.
+13	Der Werker entnimmt die 57 Getrieberäder vom Tablar und legt sie in die Kommissionierbox.
+Zur Bestätigung scannt er den Warenbegleitschein ein.	Bei bestimmten Aufträgen wird ein Einzelentnahmebeleg gedruckt.
+15	Der Werker fordert das Abfördern des Tablars an.	Das System lagert Tablar 7 wieder ein.
+16		Das System informiert den Werker über das Ende dieses Auftrags.
+17	Der Werker schiebt die Kommissionierbox in den Vertikalförderer.	Das System fördert den Behälter zum AKL-Entnahmestich.
+Zusätzlich wird der erste Behälter zum AKL-Entnahmestich gefördert.
+
+18		Das System meldet an SAP die Abarbeitung der ersten beiden Positionen von Auftrag A5
+19		Das System druckt die Kommissionierliste am IPunkt.
+Inhalt:
+013 Wellen A4 (AKL)
+057 Getrieberäder T2 (AKL)
+
+20	Ein IPunkt-Werker nimmt die Behälter vom Entnahmestich und stellt ihn auf die Zusammenführungs-Rollenbahn.	
+21	Ein (Zusammenführ-)Staplerfahrer nimmt sich die Kommissionierliste.
+Er holt die AKL-Umfänge und fährt diese in die Produktion.	
+
+
+AKL-009 Abarbeitung eines Auftrags (1 Auftragsposition, wird im AKL befriedigt, Fehlmenge bei der Kommissionierung, Material noch im AKL vorhanden)
+
+#	Anwender / Partnersystem	System
+1-5		
+6		Das System zeigt dem Werker an, dass er aus Quadrant 1 13 Wellen kommissionieren soll.
+7	Der Werker entnimmt findet nur 5 Wellen auf dem Tablar vor.
+Er scannt zur Bestätigung den Warenbegleitschein ein.
+Er entnimmt die 5 Wellen vom Tablar und legt sie in die Kommissionierbox.
+Er korrigiert die Anzahl auf 5 und bestätigt die Entnahme.
+	Bei bestimmten Aufträgen wird ein Einzelentnahmebeleg gedruckt.
+Danach fordert das System den Werker auf, zu bestätigen, dass sich keine Wellen mehr auf dem Tablar (im angegebenen Quant) befinden.
+		? Wird in Stufe 2 das Tablar / die TuPos gesperrt?
+	Der Werker bestätigt den Nulldurchgang.	Das System schickt eine Inventurmeldung mit Inventurdifferenz an SAP.
+8	Der Werker fordert das Abfördern des Tablars an.	Das System lagert Tablar 4 wieder ein.
+9		Das System informiert den Werker über das Ende dieses Auftrags.
+10	Der Werker schiebt die Kommissionierbox in den Vertikalförderer.	Das System fördert den Behälter zu einem Pufferplatz
+
+	Bearbeitung eines anderen Auftrags	
+11		Das System zeigt den gesamten AKL-Umfang des Auftrags an:
+13 Wellen A4 (7 bereits gepickt)
+12	Der Werker entscheidet, dass er für die Auftragsnachbearbeitung eine Kommissionierbox verwendet.	
+13	Der Werker scannt die Kommissionierbox ab.	Das System druckt einen Begleitbeleg für die Kommissionierbox.
+14		Das System zeigt dem Werker an, dass er aus Quadrant 3 6 Wellen kommissionieren soll.
+15	Der Werker entnimmt die 6 Wellen vom Tablar und legt sie in die Kommissionierbox.
+Zur Bestätigung scannt er den Warenbegleitschein ein.	Bei bestimmten Aufträgen wird ein Einzelentnahmebeleg gedruckt.
+16	Der Werker fordert das Abfördern des Tablars an.	Das System lagert Tablar 17 wieder ein
+17		Das System informiert den Werker über das Ende dieses Auftrags.
+18	Der Werker schiebt die Kommissionierbox in den Vertikalförderer.	Das System fördert den Behälter zum AKL-Entnahmestich.
+Zusätzlich wird der erste Behälter zum AKL-Entnahmestich gefördert.
+
+		
+
+
+AKL-023 Abarbeitung eines Auftrags (1 Auftragsposition, wird im AKL befriedigt, Nulldurchgang)
+
+AKL-024 Abarbeitung eines Auftrags (1 Auftragsposition, wird im AKL befriedigt, nahe Nulldurchgang)
+
+AKL-010 Abarbeitung eines Auftrags (1 Auftragsposition, wird im AKL befriedigt, Fehlmenge bei der Kommissionierung, Material nicht mehr im AKL, aber im MPL vorhanden)
+
+AKL-011 Abarbeitung eines Auftrags (1 Auftragsposition, wird im AKL befriedigt, Fehlmenge bei der Kommissionierung, Material im Lager nicht mehr vorhanden)
+
+AKL-012 Abarbeitung eines Auftrags (1 Auftragsposition, wird im AKL befriedigt, Fach-Leer-Konflikt, Material nicht mehr im Lager vorhanden)
+
+AKL-013 Abarbeitung eines Nachschubauftrags (1 Auftragsposition, wird im AKL befriedigt, kein Fehler)
+
+AKL-014 Abarbeitung eines Nachschubauftrags (1 Auftragsposition, wird im AKL befriedigt, Fach-Leer-Konflikt, Material nicht mehr im Lager vorhanden)
+
+AKL-015 Abarbeitung eines Verdichtungsauftrags (2 Behälter aus dem AKL, Kein Fehler)
+
+AKL-016 Abarbeitung eines Verdichtungsauftrags (2 Behälter aus dem AKL, Fachleerkonflikt)
+
+AKL-017 ?Abarbeitung eines Verdichtungsauftrags (2 Behälter aus dem AKL, Fehlmenge)
+
+AKL-018 Abarbeiten eines Inventurauftrags (1 Behälter / 1 Tu-Position aus dem AKL wird gezählt)
+
+AKL-019 Abarbeitung eines Verschrottungsauftrags (AKL)
+Klärung einer Fehlmenge mit zu hoher Wertdifferenz
+BKS
+BKS-001 Abarbeitung eines Auftrags (1 Auftragsposition, wird im BKS-Regalbereich befriedigt, kein Fehler)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt einen Auftrag A5
+Es handelt sich um eine Bestellung 5 Befestigungsdrähten.
+	System speichert den Auftrag.
+2		Das System zeigt im BKS den gesamten BKS-Umfang des Auftrags an:
+5 Befestigungsdrähte.
+3	Ein Bks-Werker nimmt eine Kommissionierbox und scannt sie für den Auftrag ein. 	Das System druckt einen Behälterbeleg  (mit Kontrollfunktion) und ggf. Einzelentnahmebelege.
+4	Der Werker legt den Beleg in die Kommissionierbox. Dann stellt er den Behälter auf die Fördertechnik.	Das System fördert den Behälter zum Regalbereich 2 (dort liegen die Befestigungsdrähte).
+5	Der Bks-Werker in Regal 2 scannt den Behälter.	Das System zeigt auf dem Nummerndisplay des Fachs, in dem die Befestigungsdrähte liegen, die Zahl 5 an.
+6	Der Werker nimmt 5 Befestigungsdrähte aus dem Regal und legt sie in den Behälter.
+Dann bestätigt er die Entnahme durch einen Taster am Fach.	Das System schaltet das Nummerndisplay am Fach aus.
+7	Der Werker stellt den Behälter zurück auf die Fördertechnik.	Das System fördert den Behälter zum Entnahmestich.
+8		Das System druckt den „echten“ Behälterbeleg.
+Das System informiert SAP über den Abschluss der 1. Position des Auftrags A5.
+Das System druckt die Kommissionierliste am IPunkt.
+Inhalt:
+005 Befestigungsdrähte (BKS)
+9	Ein IPunkt-Werker nimmt die Behälter von den Entnahmestichen und stellt sie auf die Zusammenführungs-Rollenbahn.	
+10	Ein (Zusammenführ-)Staplerfahrer nimmt sich die Kommissionierliste.
+Er holt BKS-Umfänge und fährt sie in die Produktion.	
+
+
+BKS-002 Abarbeitung eines Auftrags (2 Auftragsposition, wird im BKS-Regalbereich befriedigt, Folgebehälter,  kein Fehler)
+
+BKS-003 Abarbeitung eines Auftrags (1 Auftragsposition, wird im BKS-Palettenbereich befriedigt, kein Fehler)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt einen Auftrag C7
+Es handelt sich um eine Bestellung von 14 Drahtrollen.	System speichert den Auftrag.
+		Es sind keine weiteren Aufträge vorhanden, deshalb wird der Auftrag allein als Wagenauftrag gefahren.
+2		Das System zeigt im BKS den gesamten BKS-Umfang des Auftrags an:
+A: 14 Drahtrollen
+3	Ein Bks-Werker nimmt eine Kommissionierbox und scannt sie für den Auftrag ein. 	Das System druckt einen Behälterbeleg  (mit Kontrollfunktion) und ggf. Einzelentnahmebelege.
+Das System zeigt auf dem Nummerndisplay der Palette, in dem die Drahtrollen liegen, die Zahl 14 an.
+Ist das Richtig? Oder muss der Werker noch etwas tun, bevor die Lichter angehen?
+4	Der Werker legt den Beleg in die Kommissionierbox. Dann stellt er den Behälter auf den Kommissionierwagen.
+Er fährt mit dem Wagen zum Palettenkommissionierbereich.	
+5	Der Werker nimmt 14 Drahtrollen von der Palette und legt sie in den Behälter.
+Dann bestätigt er die Entnahme durch einen Taster am Fach.	Das System schaltet das Nummerndisplay am Fach aus.
+6	Der Werker fährt mit dem Kommissionierwagen zurück zum I-Punkt der Fördertechnik. Dort setzt der den Kommissionierbehälter auf.	Das System fördert den Behälter zum Entnahmestich.
+7		Das System druckt den „echten“ Behälterbeleg.
+Das System informiert SAP über den Abschluss der 1. Position des Auftrags A5.
+Das System druckt die Kommissionierliste am IPunkt.
+Inhalt:
+014 Drahtrollen (BKS)
+8	Ein IPunkt-Werker nimmt die Behälter von den Entnahmestichen und stellt sie auf die Zusammenführungs-Rollenbahn.	
+9	Ein (Zusammenführ-)Staplerfahrer nimmt sich die Kommissionierliste.
+Er holt BKS-Umfänge und fährt sie in die Produktion.	
+
+BKS-004 Abarbeitung eines Auftrags (1 Auftragsposition, wird im BKS-Palettenbereich befriedigt, kein Fehler, löst Nachschub aus)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt einen Auftrag C7
+Es handelt sich um eine Bestellung von 14 Drahtrollen.	System speichert den Auftrag.
+		Es sind keine weiteren Aufträge vorhanden, deshalb wird der Auftrag allein als Wagenauftrag gefahren.
+2		Das System zeigt im BKS den gesamten BKS-Umfang des Auftrags an:
+A: 14 Drahtrollen
+3	Ein Bks-Werker nimmt eine Kommissionierbox und scannt sie für den Auftrag ein. 	Das System druckt einen Behälterbeleg  (mit Kontrollfunktion) und ggf. Einzelentnahmebelege.
+Das System zeigt auf dem Nummerndisplay der Palette, in dem die Drahtrollen liegen, die Zahl 14 an.
+Ist das Richtig? Oder muss der Werker noch etwas tun, bevor die Lichter angehen?
+4	Der Werker legt den Beleg in die Kommissionierbox. Dann stellt er den Behälter auf den Kommissionierwagen.
+Er fährt mit dem Wagen zum Palettenkommissionierbereich.	
+5	Der Werker nimmt 14 Drahtrollen von der Palette und legt sie in den Behälter.
+(Durch die Entnahme wird die Mindestmenge von 100 Drahtrollen unterschritten).
+Dann bestätigt er die Entnahme durch einen Taster am Fach.	Das System schaltet das Nummerndisplay am Fach aus.
+(Das System startet einen Nachschubauftrag)
+6	Der Werker fährt mit dem Kommissionierwagen zurück zum I-Punkt der Fördertechnik. Dort setzt der den Kommissionierbehälter auf.	Das System fördert den Behälter zum Entnahmestich.
+7		Das System druckt den „echten“ Behälterbeleg.
+Das System informiert SAP über den Abschluss der 1. Position des Auftrags A5.
+Das System druckt die Kommissionierliste am IPunkt.
+Inhalt:
+014 Drahtrollen (BKS)
+8	Ein IPunkt-Werker nimmt die Behälter von den Entnahmestichen und stellt sie auf die Zusammenführungs-Rollenbahn.	
+9	Ein (Zusammenführ-)Staplerfahrer nimmt sich die Kommissionierliste.
+Er holt BKS-Umfänge und fährt sie in die Produktion.	
+	Nachschub AKL (diese Schritte finden Parallel zu Schritt 6-9 statt)	
+1		Das System fährt Tablar 13 zum Arbeitsplatz 1.
+2		Das System zeigt den gesamten AKL-Umfang des Nachschub-Auftrags an:
+200 Drahtrollen
+3	Der Werker entscheidet, dass er für den Auftrag eine Kommissionierbox verwendet.
+Hat der Werker hier eine Entscheidung? Oder werden immer spezielle Behälter für Nachschub verwendet?	
+4	Der Werker scannt die Kommissionierbox ab.	Das System druckt einen Begleitbeleg für die Kommissionierbox.
+5		Das System zeigt dem Werker an, dass er aus Quadrant 2 200 Drahtrollen kommissionieren soll.
+6	Der Werker entnimmt die 200 Drahtrollen vom Tablar und legt sie in die Kommissionierbox.
+Zur Bestätigung scannt er den Warenbegleitschein ein.	Das System druckt einen Nachschubbeleg.
+7	Werker fordert die Abförderung des aktuellen Tablars an.	Das System lagert Tablar 13 wieder ein.
+8		Das System informiert den Werker über das Ende dieses Auftrags.
+9	Der Werker schiebt die Kommissionierbox in den Vertikalförderer.
+Stimmt das? Oder wird Nachschub organisatorisch zum BKS gebracht?	Das System fördert den Behälter zum AKL-Entnahmestich.
+10	Ein IPunkt-Werker nimmt den Behälter von den Entnahmestichen und stellt ihn auf einen Verteilwagen.
+Er fährt mit dem Wagen in den Palettenbereich und legt die Nachschub-Drahtrollen auf die Palette mit den Drahtrollen.
+Nun scannt er Nachschubbeleg und Fachnummer zur Bestätigung ab.
+	Das System verbucht den Nachschub auf der Palette.
+	Nachschub MPL (diese Schritte finden Parallel zu Schritt 6-9 statt)	
+1		Das System zeigt im IPunkt-Bereich den MPL-Nachschubauftrag an:
+200 Drahtrollen.
+2	Ein IPunkt-Werker aktiviert den MPL-Anteil.
+	Das System druckt einen Nachschub-Beleg für 200 Drahtrollen.
+Inhalt: Nimm 200 Drahtrollen aus Fach 4/57/3.
+Wird zusätzlich ein Einzelentnahmebeleg gedruckt?
+3	Der IPunkt-Werker klebt alle Belege auf eine Fahne.	
+4	Ein Kommissionier-Fahrzeug-Fahrer nimmt sich die Fahne.	
+5	Der Fahrer nimmt eine Palette als Kommissionierbehälter auf seine Gabel.	
+6	Der Fahrer fährt zu Fach 4/57/3 und entnimmt dort 200 Drahtrollen aus der Gitterbox und legt diese auf seinen Kommissionierbehälter.	
+7	Der Fahrer stellt den fertigen Kommissionierbehälter auf einen leeren „Fertig-“Platz
+Ist das so? Oder gibt es spezielle BKS-Plätze? Oder fährt er die Palette gleich ins BKS?	
+8	Der Fahrer geht zu einem PC, scannt den Beleg ein und bestätigt die Entnahme.	Das System speichert den Entnahmevollzug.
+9	Ein (Zusammenführ-)Staplerfahrer holt die Palette aus dem MPL und fährt sie ins BKS. 
+Was ist sein Trigger? Er bekommt ja keine Kommissionierliste?	
+10	Ein IPunkt-Werker nimmt die Palette mit einer Ameise auf.
+Er fährt mit der Ameise in den Palettenbereich und stellt diese Nachschubpalette hinter die Palette mit den Drahtrollen.
+Nun scannt er Nachschubbeleg und Fachnummer zur Bestätigung ab.
+	Das System verbucht den Nachschub auf der Palette.
+
+Offene Punkte: 
+Wie sieht die Bestätigung des Nachschubs am 2.6. aus (noch kein Wagenterminal)? Wie sieht sie bisher aus?
+
+Gibt es das Szenario PKB-Nachschub aus dem AKL überhaupt? Oder wird der Palettenbereich immer aus dem MPL mit Nachschub versorgt?
+
+Wie wird der Kommissionier-Behälter gelöscht? (Muss er gelöscht werden)
+
+BKS-012 Abarbeitung eines Auftrags (2 Auftragspositionen, wird im BKS-Palettenbereich befriedigt, kein Fehler, Nachfolgebehälter)
+
+BKS-013 Abarbeitung eines Auftrags (2 Auftragspositionen, wird im BKS-Regalbereich befriedigt, kein Fehler, Nachschub)
+
+BKS-005 Abarbeitung eines Auftrags (1 Auftragsposition, wird im BKS-Regalbereich befriedigt,  Fehlmenge, Material noch im AKL vorhanden)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt einen Auftrag A5
+Es handelt sich um eine Bestellung 5 Befestigungsdrähten.
+	System speichert den Auftrag.
+2		Das System zeigt im BKS den gesamten BKS-Umfang des Auftrags an:
+5 Befestigungsdrähte.
+3	Ein Bks-Werker nimmt eine Kommissionierbox und scannt sie für den Auftrag ein. 	Das System druckt einen Behälterbeleg  (mit Kontrollfunktion) und ggf. Einzelentnahmebelege.
+4	Der Werker legt den Beleg in die Kommissionierbox. Dann stellt er den Behälter auf die Fördertechnik.	Das System fördert den Behälter zum Regalbereich 2 (dort liegen die Befestigungsdrähte).
+5	Der Bks-Werker in Regal 2 scannt den Behälter.	Das System zeigt auf dem Nummerndisplay des Fachs, in dem die Befestigungsdrähte liegen, die Zahl 5 an.
+6	Der Werker nimmt 2 Befestigungsdrähte aus dem Regal und legt sie in den Behälter.
+Danach ist der Entnahmebehälter leer.
+Der Werker korrigiert die Menge auf 2.
+Dann bestätigt er die Entnahme durch einen Taster am Fach.	Das System schaltet das Nummerndisplay am Fach aus.
+Das System informiert SAP über eine Fehlmenge von 3 Befestigungsdrähten.
+7	Der Werker stellt den Behälter zurück auf die Fördertechnik.	Das System fördert den Behälter zum Entnahmestich.
+8		Das System druckt den „echten“ Behälterbeleg.
+Das System druckt ggf. einen Einzelentnahmebeleg mit korrigierter Menge.
+Das System druckt eine BKS-Fehlteil-Liste. Inhalt:
+3 Befestigungsdrähte.
+
+		
+9		Das System fährt Tablar 17 zum Arbeitsplatz 1.
+10		Das System zeigt den gesamten AKL-Umfang des Auftrags an:
+3 Befestigungsdrähte
+11	Der Werker entscheidet, dass er für den Auftrag eine Kommissionierbox verwendet.	
+12	Der Werker scannt die Kommissionierbox ab.	Das System druckt einen Begleitbeleg für die Kommissionierbox.
+13		Das System zeigt dem Werker an, dass er aus Quadrant 4 3 Befestigungsdrähte kommissionieren soll.
+14	Der Werker entnimmt die 3 Befestigungsdrähte vom Tablar und legt sie in die Kommissionierbox.
+Zur Bestätigung scannt er den Warenbegleitschein ein.	Bei bestimmten Aufträgen wird ein Einzelentnahmebeleg gedruckt.
+15	Werker fordert die Abförderung des aktuellen Tablars an.	Das System lagert Tablar 17 wieder ein.
+16		Das System informiert den Werker über das Ende dieses Auftrags.
+17	Der Werker schiebt die Kommissionierbox in den Vertikalförderer.	Das System fördert den Behälter zum AKL-Entnahmestich.
+18		Das System meldet an SAP die Abarbeitung der ersten Position von Auftrag A5.
+Das System druckt die Kommissionierliste. Inhalt:
+2 Befestigungsdrähte (BKS)
+3 Befestigungsdrähte (AKL)
+19	Ein IPunkt-Werker nimmt die Behälter von den Entnahmestichen und stellt sie auf die Zusammenführungs-Rollenbahn.	
+20	Ein (Zusammenführ-)Staplerfahrer nimmt sich die Kommissionierliste.
+Er holt die BKS- und AKL-Umfänge und fährt sie in die Produktion.	
+21	Nachschub!!	
+
+Offene Punkte:
+
+Der Werker muss nun 2x vom gleichen Tablar kommissionieren: Einmal, um die Fehlmenge zu befriedigen, und einmal für den Nachschub. Macht es Sinn, nur einen Nachschubauftrag auszulösen und im BKS „nachzupicken“?
+
+BKS-006 Abarbeitung eines Auftrags (1 Auftragsposition, wird im BKS-Regalbereich befriedigt,  Fehlmenge, Material noch im MPL vorhanden)
+
+BKS-007 Abarbeitung eines Inventurauftrags (1 Behälter im AKL)
+
+BKS-008 Nachbestückung eines Regalfachs aus AKL
+
+#	Anwender / Partnersystem	System
+1	- Werker entnimmt 20 Schrauben aus BKS-Fach 13.
+- Er bestätigt die Entnahme am LCD Terminal	- Normale Entnahmereaktion aus Werkersicht
+- System legt einen Nachschubauftrag an: Nachschub für Regal: 150 Schrauben für Fach 13
+		
+2		- System fährt Tablar 17 zum Arbeitsplatz 2 (Inhalt 600 Schrauben)
+- System signalisiert einen neuen Auftrag und fordert das Scannen des Kommissionierbehälters an.
+	- Werker nimmt eine Kommissionierbox und scannt diese	- System „verheiratet“ die Kommissionierbox mit dem Nachschubauftrag.
+- System druckt einen Begleitschein Behälter (BSB)
+3	- Werker scannt Warenbegleitbeleg (WBB)
+- Werker legt 150 Schrauben vom Tablar in die Kommissionierbox und bestätigt die Entnahme am Dialog	- System druckt Nachbevorratungsbeleg (NBV)
+- System druckt die Kommissionierliste (am MPL-IPunkt)
+4	- Werker legt Nachbevorratungsbeleg in die Kommissionierbox
+- Werker fordert die Abförderung des Tablars an.	- System fährt Tablar weg.
+		
+5	- Werker trägt die Kommissionierbox ins BKS und stellt sie in die Nachschubzone
+	
+	- Ein BKS-Werker nimmt den NBV-Beleg aus der Kommissionierbox.
+- Er packt das Material in einen passenden blauen Schäferkasten.
+- Er stellt den Schäferkasten in Fach 13
+- Er scannt NBV um die Nachbevorratung zu bestätigen	- System bucht Bestand auf Pseudo TU/TUP im Regal Fach 13
+- System löscht die Kommissionier-TU
+- System löscht den Nachschubauftrag
+
+BKS-016 Nachbestückung eines Regalfachs aus MPL
+
+
+
+BKS-014 Nachschub eines Regalfachs wenn nicht genug Material vorhanden ist.
+
+#	Anwender / Partnersystem	System
+1	- Werker entnimmt 20 Schrauben aus BKS-Fach 13.
+- Er bestätigt die Entnahme am LCD Terminal	- Normale Entnahmereaktion aus Werkersicht
+- System legt einen Nachschubauftrag an: Nachschub für Regal: 150 Schrauben für Fach 13
+		
+2		- System fährt Tablar 17 zum Arbeitsplatz 2 (Inhalt 100 Schrauben)
+- System signalisiert einen neuen BKS Nachschubauftrag (+ Fachgröße „klein“)
+3	- Werker nimmt einen kleinen, blauen Schäferkasten (wird nicht gescannt)
+- Werker scannt Warenbegleitbeleg (WBB)
+- Werker entnimmt 100 Schrauben und bestätigt die Entnahme am Dialog	- System druckt Nachbevorratungsbeleg (NBV)
+4	- Werker legt Nachbevorratungsbeleg in den Schäferkasten
+- Werker fordert die Abförderung des Tablars an.	- System fährt Tablar weg.
+		
+5	- Werker trägt Schäferkasten ins BKS und stellt ihn in Fach 13
+- Werker scannt NBV um die Nachbevorratung zu bestätigen	- System bucht Bestand auf Pseudo TU/TUP im Regal Fach 13
+- ?? Ist anschließend noch ein Nachschubauftrag mit 50 Schrauben im System ?? 
+		
+6		
+
+Vorschlag: Wenn durch die Nachbevorratung die Mindest Menge nicht erreicht wird, wird während der Bebuchung mit dem neu hinzugekommenen Material ein weiterer Nachschubauftrag mit der original Nachschubmenge angelegt. Achtung: Wird ein Material aus dem BKS gelöscht, so muss ein evtl. offener Nachschubauftrag abgebrochen werden.
+
+BKS-009 Nachbestückung eines Palettenstellplatzes
+
+#	Anwender / Partnersystem	System
+1	- Werker entnimmt 30 Dichtringe aus BKS Palettenstellplatz 42
+( Anschließend sind weniger als 100 Dichtringe in der Gitterbox )
+- Werker bestätigt entnahmen an LCD Terminal	- Systemreaktion für Werker entspricht einer normalen Entnahme
+- System stellt fest, dass Nachschubgrenze (100 Stück) unterschritten wurde.
+- System legt Nachschubauftrag (300 Dichtringe für Palettenstellplatz 42) an.
+		
+2	MPL IPunkt Werker wählt in Auftragsübersicht den Nachbevorratungsauftrag zur Bearbeitung aus.	System druckt drei Belege:
+- einen Einzelentnahmebeleg (Nimm 300 Dichtungen aus Fach 321)
+- einen Nachbevorratungsbeleg (300 Dichtungen für Platz 42)
+- einen Begleitschein Behälter (Behälter für Nachschubauftrag, Ziel BKS) 
+3	- Kommissionier-Staplerfahrer nimmt alle Belege
+- Kommissionier-Staplerfahrer holt sich eine niedrige Gitterbox auf die Gabel und legt BSB hinein.
+- Staplerfahrer fährt zum Fach 321, entnimmt 300 Dichtungen und legt diese in seine Gitterbox. Zusätzlich legt er den NBV in den Behälter. 
+- Staplerfahrer stellt die Kommissionier-Gitterbox auf einen Pufferplatz.	
+	Fahrer scannt am MPL-IPunkt den EEB und bestätigt die Entnahme	System druckt eine Kommissionierliste. Inhalt:
+Nachschub für BKS
+300 Dichtungen
+	- Verteilstaplerfahrer nimmt sich die Kommissionierliste.
+- Fahrer holt sich die Kommissioniergitterbox vom Pufferplatz und entnimmt den NBV.
+- Fahrer fährt in den BKS-Regalbereich zu Stellplatz 42
+- Fahrer nimmt den Restbestand, der sich noch in der „alten“ Gitterbox im BKS befindet, und legt diesen in die „neue“.
+- Fahrer tauscht die „alte“ Gitterbox gegen die „neue“.
+- Fahrer fährt die alte Gitterbox zum „leere Gitterboxen“-Platz.	
+	- Fahrer scannt den NBV-Beleg	- System verbucht 300 + Altbestand Dichtringe auf Palettenstellplatz 42 in die virtuelle Gitterbox an Platz 42
+- „Alte“ Gitterbox wird aus dem System gelöscht.
+- Nachschubauftrag wird aus dem System gelöscht.
+
+BKS-017 Nachbestückung eines Palettenstellplatzes aus AKL
+
+
+BKS-015 Nachschub eines Palettenstellplatzes wenn nicht genug Material vorhanden ist.
+
+BKS-010 Neubelegen eines Faches  / Palettenplatzes mit neuem Material
+
+BKS-011 Veränderung der Mengen, ab denen Nachschub ausgelöst werden soll / der Nachschubmengen / ? der Nachschubquelle ?
+I-Punkt (beim BKS)
+?? 
+MPL (alt)
+MPLA-001 Abarbeitung eines Auftrags (1 Auftragsposition, wird im MPL befriedigt, kein Fehler)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt Auslagerauftrag per WMTORD.	System speichert Auslagerauftrag und teilt ihn im MPL zu
+2	Anwender sieht MPL Teilumfang im Dialog als „zuteilbar“	
+3	Anwender aktiviert Auftrag	System druckt EEBs für Auftrag
+4	Anwender klebt EEBs auf eine Fahne und kommissioniert EEBs	
+5	Anwender bestätigt Entahmen per Dialog	Kommissionierliste wird gedruckt
+6		Entnahmen werden an SAP bestätigt
+7		Auftrag ist abgeschlossen und wird gelöscht
+
+
+MPLA-004 Abarbeitung eines Auftrags (1 Auftragsposition, wird im MPL befriedigt, Fehlmenge)
+
+#	Anwender / Partnersystem	System
+1	SAP schickt Auslagerauftrag per WMTORD.	System speichert Auslagerauftrag und teilt ihn im MPL zu
+2	Anwender sieht MPL Teilumfang im Dialog als „zuteilbar“	
+3	Anwender aktiviert Auftrag	System druckt EEBs für Auftrag
+4	Anwender klebt EEBs auf eine Fahne und kommissioniert EEBs	
+5	Anwender bestätigt Entahmen per Dialog	
+6	Anwender bestätigt eine Fehlmenge per Dialog	Fehlmenge wird per Inventur IDOC an SAP gemeldet
+7		System erstellt einen Nachdispositionsauftrag
+8		Kommissionierliste wird gedruckt
+9		Entnahmen werden an SAP bestätigt
+10		Auftrag wartet auf Nachdispositionsauftrag
+
+MPLA-006 Einlagerung von avisiertem Material ins MPL 
+
+#	Anwender / Partnersystem	System
+1	SAP meldet das Material „Getriebe 422“ an.	System speichert die Stammdaten für Material „Getriebe 422“
+	SAP schickt die Auftragsankündigung A17.
+
+Es werden 50 Getriebe 442 avisiert.	System speichert die Avise.
+	Eine Gitterbox mit 50 Getrieben 442 wird im MPL angeliefert. 
+Die Gitterbox enthält einen Wareneingangsbeleg mit Avise, Aviseposition, Material, Menge	
+	Der IPunkt-Mitarbeiter scannt den Wareneingangsbeleg ein.	Das System zeigt die Avise, Aviseposition, Material und Menge an.
+	Der IPunkt-Mitarbeiter nimmt ein Blechkennzeichen, das ein leeres Fach markiert, und befestigt es an der Gitterbox.
+Danach gibt er den Inhalt des Blechkennzeichens (=Fachnummer = Behälterbezeichnung) ein und bestätigt die Eingabe.	Das System druckt einen Warenbegleitbeleg.
+
+Danach meldet das System die Aviseposition an SAP als fertig zurück.
+	Ein Schwerlast-Staplerfahrer fährt die Gitterbox in das Fach, das dem Blechkennzeichen entspricht.	
+
+MPL (neu)
+Fußgänger (Touchpanel)
+
+DLG-MPLN-010 Einlagerung
+ 
+
+DLG-MPLN-011 Popup Behälter Inhalt / Positions Auswahl
+ 
+
+
+DLG-MPLN-001 Popup Behälter scannen
+ 
+
+DLG-MPLN-002 Popup Fehler nach Scannen
+ 
+
+DLG-MPLN-003 Popup Tu Neu Anlegen - Einlagerung
+ 
+
+DLG-MPLN-004 Popup Tu Neu Anlegen - Zulagerung
+ 
+
+DLG-MPLN-020 Popup Höhe / Zielfach Ändern
+ 
+
+DLG-MPLN-030 Zulagerung
+ 
+
+DLG-MPLN-031 Popup Inhalt Zulagerung / Auswahl der Position zur Bearbeitung
+ 
+
+DLG-MPLN-040 Popup Weitere Ziele	
+ 
+
+MPLN-001 Fußgänger vereinnahmt Ware für MPL zur Voll Einlagerung
+
+Anwender / Partnersystem	System
+SAP schickt die Avise A17.
+
+Es werden 50 Getriebe 442 avisiert.	System speichert die Avise. Es sind bereits andere Avisen bekannt.
+Ware wird physikalisch bereitgestellt. Fußgänger scannt einen Einlagerungsbehälter (Gitterbox hoch/halbhoch oder Europalette)	Das System prüft ob der Einlagerungsbehälter unbekannt ist und legt einen neuen Behälter an. Falls der Behälter schon bekannt ist und buchungsmäßig noch im Einlagerbereich steht wird der bisherige Behälter geladen. (Ein Behälter kann bereits mit Auslagerungsmaterial bebucht sein. Dieser wird dann Zwischengepuffert, Eine Zulagerung darf hier nicht stattfinden)
+	Im Dialog ist sichtbar welcher Behälter momentan zur Verheiratung mit Material bereit steht.
+Fußgänger nimmt SAP WE Beleg und scannt TANUM	System prüft ob Avise vorhanden ist und findet Avise A17. Materialnummer und Kurztext werden angezeigt
+[ACHTUNG: Das Material darf nicht mit einer anderen Bestandskennzeichnung auf der selben Tu gemischt werden]
+Fußgänger zählt Material und gibt Menge in Dialog ein.	System prüft ob die Menge noch zur Avise zugelagert werden kann und legt eine entsprechende Zulagerung an.
+	System schlägt ein Fach vor, das der Höhenklasse des Behälters entspricht
+Fußgänger akzeptiert Fachvorschlag und bestätigt die Einlagerung des Materials „Getriebe 422“	Dialog zeigt weiterhin den Behälter an. So dass der Benutzer eine weitere Avise mit dem Behälter verheiraten kann.
+Fußgänger scannt weiteren SAP Beleg	System prüft ob Avise vorhanden ist und findet Avise A23. Materialnummer und Kurztext werden angezeigt
+Fußgänger zählt Material und gibt Menge in Dialog ein.	System prüft ob die Menge noch zur Avise zugelagert werden kann und legt eine entsprechende Zulagerung an.
+	System zeigt immer noch das bereits akzeptierte Fach zur Komplett Einlagerung an.
+Fußgänger ändert die benötigte Höhenklasse von Mittelhoch auf Hoch.	System zeigt neuen Fachvorschlag an.
+Bediener überschreibt Fachvorschlag mit Selbst eingegebener Koordinate	System prüft ob Fach Leer ist und akzeptiert das Einlagerfach
+Bemerkung: Wenn ein Behälter einmal für eine Kompletteinlagerung markiert ist, kann er nicht mehr zu einer Zulagertour umfunktioniert werden.
+
+MPLN-002 Fußgänger löscht verreinnahmten Behälter wg. Fehleingabe
+
+Anwender / Partnersystem	System
+User legt einen Behälter zur Einlagerung an und vereinnahmt Ware.	System legt entsprechende Daten an.
+User entscheidet, dass er die Ware lieber zu bereits vorhandenen Behältern zulagern möchte und löscht den Einlagerungsbehälter	System prüft, dass es sich um einen Einlagerungs oder Zulagerungsbehälter handelt und löscht getätigte Zulagerungen und den Behälter. Falls Avisen in den Zustand "abgeschlossen" gesetzt werden sollten wird dieser Zustand zurück genommen.
+
+MPLN-005 Fußgänger vereinnahmt Ware zur Zulagerung
+
+Anwender / Partnersystem	System
+User scannt einen neuen Behälter und wählt ihn als Zulagerungsbehälter aus	Das System prüft ob der Zulagerungsbehälter unbekannt ist und legt einen neuen Behälter an. Falls der Behälter schon bekannt ist und buchungsmäßig noch im Einlagerbereich steht wird der bisherige Behälter geladen. (Ein Behälter kann bereits mit Auslagerungsmaterial bebucht sein. Dieser wird dann Zwischengepuffert, Eine Zulagerung darf hier nicht stattfinden)
+User scannt SAP Avise Beleg	System sucht nach Avise und findet A18. Materialnummer und Kurztext werden angezeigt.
+Fußgänger zählt Material und gibt Menge in Dialog ein.	System prüft ob die Menge noch zur Avise zugelagert werden kann und legt eine entsprechende Zulagerung an.
+	System schlägt ein Fach vor, das bereits ausschliesslich mit dem Material belegt ist und für welches die Zulagerungsmenge + vorhandene Menge kleiner als die bisherige Max Menge ist.
+[ACHTUNG: Das Material darf nicht mit einer anderen Bestandskennzeichnung auf der selben Tu gemischt werden]
+Fußgänger akzeptiert Fachvorschlag und bestätigt die Einlagerung des Materials „Getriebe 422“	Dialog zeigt weiterhin den Behälter an. So dass der Benutzer eine weitere Avise mit dem Behälter verheiraten kann.
+Fußgänger scannt weiteren SAP Beleg	System prüft ob Avise vorhanden ist und findet Avise A24. Materialnummer und Kurztext werden angezeigt
+Fußgänger zählt Material und gibt Menge in Dialog ein.	System prüft ob die Menge noch zur Avise zugelagert werden kann und legt eine entsprechende Zulagerung an.
+	System schlägt ein Fach vor, das bereits ausschliesslich mit dem Material belegt ist und für welches die Zulagerungsmenge + vorhandene Menge kleiner als die bisherige Max Menge ist.
+Fußgänger wählt die Funktion "Weitere Ziele"	System zeigt alle Fächer an auf denen das Material bereits vorhanden ist. Sortiert aufsteigend nach Anzahl der verschiedenen Materialien.
+Bediener wählt ein neues Fach aus den vorgeschlagenen Fächern.	System übernimmt das Fach. Falls es sich um einen Artikelreinen Ladungsträger handelt wird die Maximale Zulagerungsmenge übernommen, falls sie die bisherige maximale Zulagerungsmenge überschreitet.
+
+
+
+MPLN-010 Fußgänger wandelt Zulagerungsbehälter in Einlagerungsbehälter um.
+	
+Anwender / Partnersystem	System
+User legt einen Behälter zur Zulagerung an und vereinnahmt Ware.	System legt entsprechende Daten an.
+User entscheidet, dass der Behälter doch komplett eingelagert werden soll. Er wählt die Funktion "in Einlagerbehälter umwandeln".	System stellt Abfrage ob wirklich umgewandelt werden soll mit dem Hinweis auf die Unumkehrbarkeit des Vorgangs.
+User Bestätigt die Abfrage	System verwirft die Ziele für die Einzelnen Zulagerungen und schlägt einen Zielplatz in der Höhenklasse des Behälters vor. Maske wechselt vom Zulagermodus auf den Einlagermodus
+User ändert die Höhenklasse	System schlägt Platz in neuer Höhenklasse vor.
+Bediener akzeptiert den Platz.	
+
+MPLN-020 Fußgänger scannt Kommissionierbehälter
+	
+Anwender / Partnersystem	System
+User scannt einen Kommissionierbehälter	System sucht Behälter und zeigt entsprechenden Inhalt an. 
+	Falls vom Verteilstapler eine Pufferung veranlasst wurde wird der Dialog "Pufferung" aufgerufen. Ein Vorschlag für einen leeren Einlagerplatz wird auf Basis der Behälter Höhe gemacht.
+User ändert die Höhenklasse	System schlägt Platz in neuer Höhenklasse vor.
+Bediener überschreibt Fachvorschlag mit Selbst eingegebener Koordinate	System prüft ob Fach Leer ist und akzeptiert das Einlagerfach
+
+DLG-MPLN-040 Pufferung
+ 	
+Kommissionierstapler
+DLG-MPLN-110 Modus Wechsel
+ 
+
+MPLN-110 Kommissionierstapler wechselt Arbeitsmodus
+	
+Anwender / Partnersystem	System
+Anwender meldet sich am Kommissionierstapler zum ersten mal an.	Kommissionierstapler ist initial im Modus "abgemeldet". Popup zur Auswahl des Modus wird aufgeblendet.
+Aktiv: abgemeldet
+Angefordert: abgemeldet
+Anwender entscheidet sich für den Zulagermodus	System wechselt direkt in den Zulagermodus, da bisher der "abgemeldet" Modus aktiv war.
+Bediener betätigt Button "Modus wechseln"
+		Popup zur Auswahl des Modus wird aufgeblendet.
+Aktiv: Zulagerung
+Angefordert: Zulagerung
+Bediener wählt "Kommissionierung"
+		System wechselt in den Kommissioniermodus, da kein Behälter zur Zulagerung auf dem Stapler aktiv ist. Stapler bekommt direkt die Übersicht für einen Auslagerauftrag angezeigt.
+Bediener betätigt Button "Modus wechseln"
+		Popup zur Auswahl des Modus wird aufgeblendet.
+Aktiv: Kommissionierung
+Angefordert: Kommissionierung
+Bediener wählt "abgemeldet"
+		System wechselt in den Modus "abgemeldet", da der Auslagerauftrag noch nicht durch Verheiraten einer Kommissionierbox begonnen wurde.
+(Wäre der Auftrag bereits begonnen worden, so hätte der Bediener ihn zu Ende fahren müssen, bevor der Modus "abgemeldet" aktive geworde wäre)
+
+MPLN-120 Kommissionierstapler kommissioniert einen Auftrag
+	
+Anwender / Partnersystem	System
+Anwender meldet sich am Kommissionierstapler an und wählt Kommissioniermodus.	System teilt den Kommissionierstapler Anteil eines Auslagerauftrages dem neu angemeldeten Stapler zu.
+Auftragsdaten (Anzahl abzuholender Kommissionierbehälter, Anzahl Entnahmen, Abstellort, Auftragsart, etc) werden angezeigt.
+Aufforderung: Kommissionierbehälter scannen.
+Anwender entscheidet sich eine halbhohe Gitterbox als Kommissionierbehälter zu verwenden. Gibo wird gescannt.	System prüft, dass Gibo noch nicht bekannt ist und legt einen entsprechenden Datensatz an.
+Ein BSB wird gedruckt.
+Aufforderung: n Kommissionierbehälter aus Zusammenführzone holen mit Anzeige welche Nummern geholt werden müssen.
+Staplerfahrer fährt in Zusammenführzone und scannt einen Behälter nach dem anderen ab.	System bucht Material aus Kommissionierbehälter in Gitterbox und gibt Kommissionierbehälter frei.
+	System zeigt Popup: Gasse wählen. Zur Verfügung stehen alle Gassen in denen Entnahmen getätigt werden müssen. Eine Gasse ist bereits vorausgewählt.
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System sucht die Entnahme, die dem Staplerfahrer am nächsten ist und zeigt Den Ort und die Materialdaten an. Aufforderung: (WBB) Materialnummer scannen.
+Staplerfahrer lokalisiert die Ware und scannt den Beleg	System zeigt Entnahme:
+MengeSoll = 20
+MengeIst = vorbelegt mit 20
+Benutzer bestätigt Menge 20	Entnahme wird verbucht. Evtl. wird EEB gedruckt (Kommt auf Auftragsart an)
+Da Restmenge 4 ist wird der Benutzer zum zählen der Restmenge aufgefordert
+Benutzer zählt 4 Teile und bestätigt die Eingabe	System akzeptiert die Zählung und setzt den Inventurzeitstempel.
+System zeigt nächste Entnahme in Fahrtrichtung den Ort und die Materialdaten an. Aufforderung: Materialnummer scannen.
+Staplerfahrer lokalisiert die Ware und scannt den Beleg	System zeigt Entnahme:
+MengeSoll = 10
+MengeIst = vorbelegt mit 10
+Benutzer bestätigt Menge 10
+	Entnahme wird verbucht. Evtl. wird EEB gedruckt (Kommt auf Auftragsart an)
+Da dies die letzt Entnahme in der Gasse war zeigt System Popup: Gasse wählen. Zur Verfügung stehen alle Gassen in denen Entnahmen getätigt werden müssen. Eine Gasse ist bereits vorausgewählt.
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System sucht die Entnahme, die dem Staplerfahrer am nächsten ist und zeigt Den Ort und die Materialdaten an. Aufforderung: Materialnummer scannen.
+Staplerfahrer lokalisiert die Ware und scannt den Beleg	System zeigt Entnahme:
+MengeSoll = 5
+MengeIst = vorbelegt mit 5
+Benutzer bestätigt Menge 5
+	Entnahme wird verbucht. Evtl. wird EEB gedruckt (Kommt auf Auftragsart an)
+Da dies die letzt Entnahme war zeigt System Popup: "Tu abstellen".
+Ziel: AB234
+Aufforderung: "Ziel scannen"
+Stapler fährt zum Platz AB234 und stellt seine Kommissionierbox ab. Zur Bestätigung scannt er den Barcode des Platzes	System akzeptiert Scannung und zeigt Übersichtsdaten des nächsten Kommissionierauftrages an.
+
+DLG-MPLN-120 Kommissioniermodus Auftragsübersicht (fehlt: Bestandsart, Nummer)
+ 
+
+DLG-MPLN-121 Kommissioniermodus - Kommbehälter aus Zusammenführzone holen
+ 
+
+DLG-MPLN-122 Popup: Gassenauswahl
+ 
+DLG-MPLN 123 Kommissionierung - Fach anfahren und scannen (Button "Fach leer", "WBB fehlt", "Material fehlt") fehlt.
+ 
+
+MPLN-121 Kommissionierstapler kann ein Teil nicht entnehmen (Schwerteil)
+	
+Anwender / Partnersystem	System
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System sucht die Entnahme, die dem Staplerfahrer am nächsten ist und zeigt Den Ort und die Materialdaten an. Aufforderung: Materialnummer scannen.
+Staplerfahrer lokalisiert die Ware und scannt den Beleg	System zeigt Entnahme:
+MengeSoll = 5
+MengeIst = vorbelegt mit 5
+Staplerfahrer entscheidet, dass die Ware nicht entnommen werden kann, da sie zu schwer oder zu sperrig ist. Er bedient den Button "Schwerteil"	System sucht die nächste Entnahme und zeigt Den Ort und die Materialdaten an. Im Hintergrund wird die Entnahme des Kommissionierstapler einem Schwerlast Stapler zugeordnet.
+Aufforderung: Materialnummer scannen.
+
+DLN-MPLN 124 Kommissionierung - Entnahme tätigen (Keine Inventur nötig)
+ 
+
+DLG-MPLN 125 Kommissionierung - Entnahme tätigen (Nahe Null)
+ 
+
+DLG-MPLN 126 Kommissionierung - Nahe Null - Restzählung
+ 
+
+DLG-MPLN-127 Popup: Kommissionierbehälter abstellen / wechseln ( Fehlt in Tu Abstellen: "Abbrechen")
+ 
+	
+DLG-MPLN-128 Popup: Inhalt Kommissionierbox
+ 
+
+MPLN-130 Kommissionierstapler fährt Zulagerung
+	
+Anwender / Partnersystem	System
+	System befindet sich im Zulagermodus. Die Maske "Tu scannen" wird angezeigt.
+Staplerfahrer scannt eine Tu im Zulagerbereich	System zeigt dem Staplerfahrer den Gassenauswahl Dialog mit allen Gassen in denen Zulagerungen gemacht werden müssen an.
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System sucht die Zulagerung, die dem Staplerfahrer am nächsten ist und zeigt Den Ort und die Materialdaten an. Aufforderung: Tu scannen.
+Staplerfahrer lokalisiert und scannt die Tu
+		System zeigt Menge ohne Zulagerung und Menge mit Zulagerung an. Staplerfahrer kann die Mengen korrigieren. Mögliche Eingaben: "Zulagerung bestätigen" / "Zulagerung abbrechen"
+Staplerfahrer wählt "Zulagerung bestätigen"	System druckt WBB mit neuer Gesamtmenge.
+Staplerfahrer legt Beleg in die Tu.	System zeigt die nächste Zulagerung in der Gasse, den Ort und die Materialdaten an. Aufforderung: Tu scannen.
+Staplerfahrer lokalisiert und scannt die Tu
+		System zeigt Menge ohne Zulagerung und Menge mit Zulagerung an. Staplerfahrer kann die Mengen korrigieren. Mögliche Eingaben: "Zulagerung bestätigen" / "Zulagerung abbrechen"
+Staplerfahrer wählt "Zulagerung abbrechen" da die Kiste nicht die gesamte Menge aufnehmen kann	System setzt die Zulagerung und Avise zurück damit der Fussgänger die Ware erneut vereinnahmen kann. 
+	Da es sich bei der Zulagerung um die letzte Zulagerung der Tour handelte zeigt das System wieder den TU scannen Dialog an.
+
+MPLN-131 Kommissionierstapler scannt Schwerlast Einlagerung
+	
+Anwender / Partnersystem	System
+	System befindet sich im Zulagermodus. Die Maske "Tu scannen" wird angezeigt.
+Staplerfahrer scannt eine Tu die vollständig eingelagert werden soll (Schwerlaststapler)	System zeigt dem Staplerfahrer die Meldung. "Tu muss mit Schwerlast Stapler komplett eingelagert werden"
+
+MPLN-132 Kommissionierstapler scannt unbekannte Tu
+	
+Anwender / Partnersystem	System
+	System befindet sich im Zulagermodus. Die Maske "Tu scannen" wird angezeigt.
+Staplerfahrer scannt eine Tu die noch nicht bekannt gemacht wurde.	System zeigt dem Staplerfahrer die Meldung. "Tu unbekannt"
+
+DLG-MPLN-130 Zulagerung Grundzustand: Tu scannen
+ 
+
+ 
+DLG-MPLN-131 Zulagerung Material zulagern. Zulager Tu scannen (Button "Zulagerung abbrechen" fehlt)
+
+ 
+
+DLG-MPLN-132 Zulagerung Hintergrund Inventur (Button "nicht zählen" fehlt)
+
+ 
+
+ 
+DLG-MPLN-133 Zulagerung bestätigen
+ 
+
+
+MPLN-140 Kommissionierstapler im Inventurmodus
+	
+Anwender / Partnersystem	System
+	System befindet sich im Inventurmodus. Die Gassenauswahl wird aufgeblendet
+Fahrer entscheidet sich für Gasse 32/33 in Richtung vom Mittelgang weg	System zeigt dem Stapler für die niedrigste y-Ebene in der noch InventurZählungen vorgenommen werden müssen die nächste Kiste (kleinste X-Koordinate) an.
+System fordert zum scannen der Tu auf
+Bediener scannt die Tu	System zeigt das Material, welches gezählt werden soll an und fordert zum scannen des WBB auf.
+Bediener scannt den WBB	System fragt nach Anzahl Teile. Gebucht sind 6
+Bediener gibt Anzahl 5 ein.	System stellt Abfrage "Differenz zur Buchung. Sind sie sicher?"
+Bediener bestätigt	System bucht 1 Teil aus und passt evtl. vorhandene Entnahmen entsprechend an.
+System zeigt nächstes zu zählende Material auf der gleichen Tu an und fordert zum scannen des WBB auf.
+Bediener entscheidet sich die Inventur abzubrechen und stellt eine Anforderung für den Kommissioniermodus	System wechselt in Kommissioniermodus und zeigt Übersicht des nächsten zu Kommissionierenden Auftrags an.
+
+DLG-MPLN-140 Inventur Tu scannen (Button Fach Leer Konflikt fehlt)
+ 
+
+DLG-MPLN-141 Inventur Material (WBB) scannen (Buttons "Material nicht vorhanden", "WBB nachdrucken" fehlen)
+ 
+
+DLG-MPLN-142 Material zählen (Button "Schwerlast Zählung" fehlt)
+ 
+
+Schwerlaststapler
+MPLN-200 Schwerlaststapler Einlagerung
+Anwender / Partnersystem	System
+	System befindet sich im Einlagermodus. Aufforderung Tu scannen.
+Fahrer scannt eine Tu im Einlagerbereich	System zeigt Zielkoordinate auf und fordert zum scannen der Koordinate als Bestätigung der Einlagerung auf.
+Bediener fährt die Kiste zur angezeigten Koordinate und stellt sie dort ab. Zur Bestätigung scannt er den Barcode des Platzes am Steher des Regals ab	System verbucht Tu auf den Einlagerplatz. Anzeige befindet sich wieder im Grundzustand. Aufforderung Tu scannen.
+
+MPLN-201 Schwerlaststapler Einlagerung Fach Voll
+Anwender / Partnersystem	System
+	System befindet sich im Einlagermodus. Aufforderung Tu scannen.
+Fahrer scannt eine Tu im Einlagerbereich	System zeigt Zielkoordinate auf und fordert zum scannen der Koordinate als Bestätigung der Einlagerung auf.
+Bediener fährt die Kiste zur angezeigten Koordinat. Koordinate ist bereits belegt. Daher drückt Bediener "Fach Voll"	System sperrt den Lagerort mit einer Fach Voll Sperre und sucht einen gleich hohen Ersatzplatz möglichst in der gleichen Gasse und zeigt diesen als neuen Einlagerort an.
+Bediener fährt die Kiste zur angezeigten Koordinate und stellt sie dort ab. Zur Bestätigung scannt er den Barcode des Platzes am Steher des Regals ab	System verbucht Tu auf den Einlagerplatz. Anzeige befindet sich wieder im Grundzustand. Aufforderung Tu scannen.
+
+MPLN-202 Schwerlaststapler Einlagerung abbrechen
+Anwender / Partnersystem	System
+	System befindet sich im Einlagermodus. Aufforderung Tu scannen.
+Fahrer scannt eine Tu im Einlagerbereich	System zeigt Zielkoordinate auf und fordert zum scannen der Koordinate als Bestätigung der Einlagerung auf.
+Vorgesetzter weist Bediener an eine andere Tu zu fahren. Bediener betätigt Button. "Einlagerung abbrechen" oder "Abstellen"	Kiste wird wieder in den Einlagerbereich gebucht und kann dort von einem anderen Schwerlast Stapler abgeholt werden oder vom Fußgänger erneut bearbeitet werden.
+
+DLG-MPLN-200 Schwerlast Stapler Einlagerung	
+ 
+
+MPLN-210 Schwerlaststapler Kommissionierung
+Anwender / Partnersystem	System
+Fahrer fordert Kommissioniermodus an.	System ändert Modus nach Abschluss der letzten Aufgabe auf Kommissioniermodus und zeigt Übersicht über den nächste Kommissionierauftrag mit Kenndaten und Entnahmen
+Anwender entscheidet sich eine hohe Gitterbox als Kommissionierbehälter zu verwenden. Gibo wird gescannt.	System prüft, dass Gibo noch nicht bekannt ist und bucht sie auf den Kranplatz des Staplers. Ein BSB wird gedruckt.
+	System zeigt Popup: Gasse wählen. Zur Verfügung stehen alle Gassen aus denen Tus geholt werden müssen. Eine Gasse ist bereits vorausgewählt.
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System zeigt dem Fahrer aus Einfahrrichtung nächstgelegene Tu an aus der in der gewählten Gasse kommissioniert werden muss.
+Aufforderung: Tu scannen
+Stapler holt Tu und scannt deren Barcode	System wechselt zum Dialog Entnahme und zeigt das angeforderte Material an. Aufforderung: WBB Scannen. Button "Material nicht vorhanden" -> führt zu 0 Mengen Kommissionierung
+Fahrer scannt WBB	Anzeige von Anzahl auf Tu, Entnahme Soll und Entnahm IST. Entnahme IST ist mit gleichem Wert wie Soll vorbelegt. Button Bestätigen
+Benutzer tätigt die Entnahme und Bestätigt sie.	Evtl. wird ein EEB gedruckt. Material wird auf aktuelle Kommissionier Tu gebucht. Dialog Einlagern wird angezeigt. System fordert den Fahrer zur Wiedereinlagerung der geholten Tu auf.
+Aufforderung "Koordinate scannen"
+Stapler stellt Tu im Regal ab und scannt zur Bestätigung den Barcode des Fachs am Steher	System bucht Tu wieder in Fach und findet eine weitere Tu in derselben Gasse. Dialog wechselt auf  "Tu holen" und zeigt direkt die nächste Entnahme an.
+Stapler holt Tu und scannt deren Barcode	System wechselt zum Dialog Entnahme und zeigt das angeforderte Material an. Aufforderung: WBB Scannen. Button "Material nicht vorhanden" -> führt zu 0 Mengen Kommissionierung
+Fahrer scannt WBB	Anzeige von Anzahl auf Tu, Entnahme Soll und Entnahm IST. Entnahme IST ist mit gleichem Wert wie Soll vorbelegt. Button Bestätigen
+Benutzer tätigt die Entnahme und Bestätigt sie.	Evtl. wird ein EEB gedruckt. Material wird auf aktuelle Kommissionier Tu gebucht. Dialog Einlagern wird angezeigt. System fordert den Fahrer zur Wiedereinlagerung der geholten Tu auf.
+Aufforderung "Koordinate scannen"
+Stapler stellt Tu im Regal ab und scannt zur Bestätigung den Barcode des Fachs am Steher	System bucht Tu wieder in Fach und findet keine weitere Tu in derselben Gasse. Popup Gassenauswahl wird angezeigt.
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System zeigt dem Fahrer aus Einfahrrichtung nächstgelegene Tu an aus der in der gewählten Gasse kommissioniert werden muss.
+Aufforderung: Tu scannen
+Stapler holt Tu und scannt deren Barcode	System wechselt zum Dialog Entnahme und zeigt das angeforderte Material an. Aufforderung: WBB Scannen. Button "Material nicht vorhanden" -> führt zu 0 Mengen Kommissionierung
+Fahrer scannt WBB	Anzeige von Anzahl auf Tu, Entnahme Soll und Entnahm IST. Entnahme IST ist mit gleichem Wert wie Soll vorbelegt. Button Bestätigen
+Benutzer tätigt die Entnahme und Bestätigt sie.	Evtl. wird ein EEB gedruckt. Material wird auf aktuelle Kommissionier Tu gebucht. Dialog Einlagern wird angezeigt. System fordert den Fahrer zur Wiedereinlagerung der geholten Tu auf.
+Aufforderung "Koordinate scannen"
+Stapler stellt Tu im Regal ab und scannt zur Bestätigung den Barcode des Fachs am Steher	System bucht Tu wieder in Fach. Es müssen keine weiteren Entnahmen mehr getätigt werden.
+Dialog wechselt in Modus Tus zu Ziel fahren. Es werden zwei noch am Kranplatz befindlichen Tus angezeigt. 
+Aufforderung: Tu scannen
+Staplerfahrer scannt eine Tu	Aufforderung: Ziel scannen
+Staplerfahrer stellt Tu am Ziel ab und scannt dessen Barcode.	Aufforderung: Tu scannen
+Staplerfahrer scannt zweite Tu	Aufforderung: Ziel scannen
+Staplerfahrer stellt Tu am Ziel ab und scannt dessen Barcode.	System bucht die zweite Tu auf den Zusammenführplatz. Damit ist der aktuelle Kommissionierauftrag abgeschlossen. Übersichtsdialog mit dem nächsten Kommissionierauftrag wird angezeigt.
+	
+
+DLG-MPLN-210 Schwerlast Stapler Kommissionierung Übersicht
+ 	
+
+DLG-MPLN-211 Schwerlast Stapler Tu holen
+ 
+
+DLG-MPLN-212 Schwerlast Stapler Material identifizieren (Buttons "Material nicht vorhanden", "WBB nachdrucken" fehlen)
+ 
+
+DLG-MPLN-212 Schwerlast Stapler Material entnehmen. Normalfall  (Button Negativ Kommissionieren muss durch Tu komplett Entnehmen ersetzt werden. Button zur Korrektur der Original Menge fehlt.)	
+ 
+
+DLG-MPLN-213 Schwerlast Stapler Material entnehmen. Nahe Null  
+
+DLG-MPLN-214 Schwerlast Stapler Einlagerung nach Kommissionierung	
+ 
+	
+DLG-MPLN-215 Schwerlast Stapler Tus zum Zusammenführplatz bringen: Tu aufnehmen
+ 	
+
+DLG-MPLN-216 Schwerlast Stapler Tus zum Zusammenführplatz bringen: Tu abgeben
+	
+ 
+
+
+
+MPLN-211 Schwerlaststapler Kommissionierung Sonderfall Tu Komplett Entnahme
+Anwender / Partnersystem	System
+	Kommissionier Start ist bereits erfolgt. 
+Kommissionierbehälter wurde bereits verheiratet.
+Erste Tu muss zum Staplerplatz gefahren werden.
+	System zeigt Popup: Gasse wählen. Zur Verfügung stehen alle Gassen aus denen Tus geholt werden müssen. Eine Gasse ist bereits vorausgewählt.
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System zeigt dem Fahrer aus Einfahrrichtung nächstgelegene Tu an aus der in der gewählten Gasse kommissioniert werden muss.
+Aufforderung: Tu scannen
+Stapler holt Tu und scannt deren Barcode	System wechselt zum Dialog Entnahme und zeigt das angeforderte Material an. Aufforderung: WBB Scannen. Button "Material nicht vorhanden" -> führt zu 0 Mengen Kommissionierung
+Fahrer scannt WBB	Anzeige von Anzahl auf Tu, Entnahme Soll und Entnahm IST. Entnahme IST ist mit gleichem Wert wie Soll vorbelegt. 
+Da Buchungsmässig nur das gewünschte Material in gewünschter Anzahl auf der Tu vorhanden ist wird zusätzlich zum Button "Bestätigen" der Button "Tu komplett entnehmen" angezeigt.
+Benutzer betätigt Button "Tu komplett Entnehmen"	System bucht die neue Tu auf den Kranplatz. Dort kann sie später als Ziel für weitere Entnahmen eingescannt werden. Ein BSB für die Tu wird gedruckt.
+
+MPLN-250 Schwerlaststapler Inventur
+Anwender / Partnersystem	System
+Anwender meldet sich an und wählt den Inventurmodus	System geht in den Inventurmodus. 
+System zeigt Popup: Gasse wählen. Zur Verfügung stehen alle Gassen in denen Schwerlast Inventuren durchgeführt werden müssen. Eine Gasse ist bereits vorausgewählt.
+Staplerfahrer entscheidet sich für eine Gasse und gibt die Richtung in der er Einfahren wird an.	System zeigt dem Fahrer aus Einfahrrichtung nächstgelegene Tu die in der Gasse gezählt werden muss.
+Stapler holt TU aus dem Regal zum Zählplatz und bestätigt per Scannung der Tu	System zeigt zu zählendes Material und fordert zum scannen des WBB auf. Button "Material nicht vorhanden" und "WBB nachdrucken" wird angezeigt.
+Staplerfahrer scannt WBB	System fordert zum zählen auf
+Staplerfahrer zählt und gibt 56 ein.	System stellt fest, dass die Anzahl mit der Buchung übereinstimmt und zeigt nächsten Artikel zur Zählung an. Aufforderung WBB scannen. Button "Material nicht vorhanden" und "WBB nachdrucken" wird angezeigt.
+Staplerfahrer drückt WBB nachdrucken.	WBB ohne Anzahl wird gedruckt
+Staplerfahrer scannt WBB	System fordert zum zählen auf
+Staplerfahrer zählt 24 und gibt 24 ein.	System stellt fest, dass die Anzahl nicht mit der Buchung übereinstimmt und zeigt Warnmeldung "Differenz zur Buchung. Sicher richtig gezählt?"
+Staplerfahrer bestätigt mit "JA"	Inventurdifferenz wird verbucht.
+Es sind keine weiteren Artikel zur Zählung in der TU vorhanden.
+System fordert Staplerfahrer zum Wiedereinlagern der Tu auf. Anforderung "Platz scannen"
+Stapler fährt Tu zum angegebenen Platz und scannt den am Steher angebrachten Barcode nachdem er die Tu abgestellt hat.	System bucht Tu ins Fach und zeigt nächste Tu im Regal an die entommen werden muss.
+
+MPLN-260 Schwerlaststapler Zwangs Bewegung
+Anwender / Partnersystem	System
+	System ist im Kommissioniermodus. Kommissionierung wurde vom Anwender bestätigt. System fordert zum Wiedereinlagern der Tu auf.
+Bediener lagert Tu ein und scannt den Platz zur Bestätigung	System hat eine Zwangsbewegung vorliegen. Da Stapler jetzt keine Tu mehr auf der Gabel hat wird er in den Zwangsbewegungs-Modus gesetzt. Modus angefordert ist weiterhin "Kommissionierung"
+	System zeigt "Tu 112233 holen" von der Quelle "23/12/15" an. Aufforderung "Tu scannen"
+Bediener fährt zu 23/12/15 holt und scannt TU 112233	System zeigt Ziel AB123 an. und fordert zum scannen des Ziels auf
+Bediener fährt zu Ziel und stellt Tu dort ab. Zur Bestätigung scannt er das Ziel AB123.	System verbucht Tu am Ziel und geht wieder in den Kommissioniermodus. Der Gassenauswahldialog wird angezeigt.
+
+
+DLG-MPLN-260 Schwerlaststapler Zwangsbewegung Behaelter holen
+  
+
+DLG-MPLN-261 Schwerlaststapler Zwangsbewegung Behaelter abgeben
+ 
+
+Zusammenführ-Stapler
+
+DLG-MPLN-300 Verteilstapler Übersicht
+ 
+
+DLG-MPLN-301 Verteilstapler Daten zu einem Stellplatz (Es fehlen zwei Checkboxes "Gepufferter Auftrag vorhanden", "Nachdispositionsauftrag vorhanden")
+ 
+
+DLG-MPLN-302 Verteilstapler Auftrag Entsorgen
+ 
+
+MPLN-300 Normalablauf Verteilstapler
+Anwender / Partnersystem	System
+Anwender meldet sich an.	System zeigt Übersicht über die vorhandenen Aufträge an. Dabei werden die bereits fertig gestellten Aufträge in einer Tabelle mit Kenndaten aufgelistet. 
+Der Staplerfahrer fährt zu einem der Stellplätze, die als Fertig gemeldet sind und scannt den Barcode des Stellplatzes	Das System zeigt Daten zu dem konkreten Auftrag an. 
+Staplerfahrer entscheidet sich den Auftrag zu entsorgen und betätigt den Button "Entsorgung beginnen"	System zeigt alle zu entsorgenden Tus in einer Liste an.
+Staplerfahrere scannt mehrere Tus hintereinander ein und nimmt diese mit zum Montageplatz in der Fertigung	Nach jeder Scannung wird die jeweilige Tu vom System wieder frei gegeben. Die entsprechenden Daten werden gelöscht. Die gescannt Tu verschwindet aus der Liste der zu entsorgenden Tus.
+Staplerfahrer scannt die letzte Tu ein.	System löscht die letzte Tu. Der Auftrag ist abgeschlossen. Anzeige wechselt wieder in den Übersichtsmodus.
+
+MPLN-301 Verteilstapler: Auftrag Puffern.
+Anwender / Partnersystem	System
+Anwender meldet sich an.	System zeigt Übersicht über die vorhandenen Aufträge an. Dabei werden die bereits fertig gestellten Aufträge in einer Tabelle mit Kenndaten aufgelistet. 
+Der Staplerfahrer fährt zu einem der Stellplätze, die als Fertig gemeldet sind und scannt den Barcode des Stellplatzes	Das System zeigt Daten zu dem konkreten Auftrag an. Die Checkbox "Gepufferter Auftrag vorhanden" ist markiert
+Staplerfahrer betätigt den Button "Rest abrufen" um die gepufferten Teile abzurufen	System wechselt wieder in den Übersichtsmodus. Auftrag ist im Status "warten auf Puffer".
+Im Hintergrund wird ein Schwerlast Stapler zur Zwangsauslagerung der gepufferten Tus beauftragt.
+
+MPLN-301 Verteilstapler: Auftrag Puffern.
+Anwender / Partnersystem	System
+Anwender meldet sich an.	System zeigt Übersicht über die vorhandenen Aufträge an. Dabei werden die bereits fertig gestellten Aufträge in einer Tabelle mit Kenndaten aufgelistet. 
+Der Staplerfahrer fährt zu einem der Stellplätze, die als Fertig gemeldet sind und scannt den Barcode des Stellplatzes	Das System zeigt Daten zu dem konkreten Auftrag an. Die Checkbox "Nach" ist markiert
+Staplerfahrer entscheidet sich den Auftrag zu puffern und betätigt den Button "Auftrag puffern"	System wechselt wieder in den Übersichtsmodus. Auftrag ist im Status "wird gepuffert".
+Im Hintergrund wird ein Schwerlast Stapler zur Zwangseinlagerung beauftragt.
+
+Leitstand
+
+MPLN-700 Leitstand aktiviert Auslagerauftrag
+
+Anwender / Partnersystem	System
+	Teilauftrag 4711 im MPL ist im Status „Bereit zur Aktivierung“. Mindestens ein Pufferplatz ist frei.
+Bediener wählt einen Auftrag und drückt „Auftrag aktivieren“	Dialog zeigt einen Auswahldialog mit den verfügbaren Pufferplätzen an.
+Bediener wählt einen Pufferplatz aus und ordnet ihn dem Auftrag zu.	System ordnet den Auftrag zum Pufferplatz zu. Auftrag kann ab sofort von freien Staplern gefahren werden.
+
+MPLN-701 Leitstand entzieht einem Stapler die aktuelle Tour
+
+Anwender / Partnersystem	System
+	Teilauftrag 4711 im MPL ist im Status „Aktiv“. Ein Kommissionierstapler und ein Schwerlaststapler sind zugeordnet.
+Der Kommissionierstapler fällt aus. Der Staplerfahrer meldet den Client im Stapler ab.	
+Ein Leitstandsarbeiter entzieht dem Kommissionierstapler per Dialog den Auftrag. Dazu wählt er den Auftrag und drückt auf einen der beiden Buttons (Kommissionier Stapler zurücksetzen / Schwerlast Stapler zurücksetzen)	System setzt Kommissionierstapler-Auftragszuordnung zurück. Damit ist der Auftrag für den nächsten Kommissionierstapler verfügbar.
+
+Leitstand
+LST-001 Anzeige aller Aufträge
+
+LST-002 Änderung einer Auftragspriorisierung
+
+LST-003 Stornieren eines Auftrags
+
+LST-004 Anlegen eines Umlagerungsauftrags (Innerhalb des Lagerorts 2001)
+
+LST-005 Anzeige aller Avisen
+
+LST-006 Stornieren einer Aviseposition
+
+LST-007 Ändern der ABC-Zuordnung eines Materials
+
+LST-008 Ändern der ABC-Zuordnung eines Lagerfachs
+
+Zusammenführ-Stapler
+ZFG-001 Auftrag zum Ziel bringen
+
+ZFG-002 Teilauftrag im MPL einlagern
+
+ZFG-003 Eingelagerten Teilauftrag aus MPL abrufen und zum Ziel bringen
+Gesamtlager
+GAL-001 Umlagerung einer Auftragsposition vom MPL ins AKL (kein Fehler)
+
+
+GAL-002 Abarbeitung eines Auftrags (3 Auftragspositionen, eine im AKL, eine im MPL, eine im BKS, kein Fehler)
+
+Vorraussetzungen (Systemzustand)
+
+
+#	Anwender / Partnersystem	System
+1	SAP schickt einen Auftrag A5
+Es handelt sich um eine Bestellung von 13 Wellen A4, 600 Bolzen und 5 Befestigungsdrähten.
+	System speichert den Auftrag.
+2		Das System fährt Tablar 4 zum Arbeitsplatz 2.
+3		Das System zeigt den gesamten AKL-Umfang des Auftrags an:
+13 Wellen A4
+4	Der Werker entscheidet, dass er für den Auftrag eine Kommissionierbox verwendet.	
+5	Der Werker scannt die Kommissionierbox ab.	Das System druckt einen Begleitbeleg für die Kommissionierbox.
+6		Das System zeigt dem Werker an, dass er aus Quadrant 1 13 Wellen kommissionieren soll.
+7.1	Der Werker scann den richtigen WBB	Das System akzeptiert die gescannte Warennummer
+7.2	Der Werker entnimmt die 13 Wellen vom Tablar und legt sie in die Kommissionierbox.
+Er bestätigt die Entnahme vollständig	Bei bestimmten Aufträgen wird ein Einzelentnahmebeleg gedruckt.
+8	Werker fordert die Abförderung des Tablars an.	Das System lagert Tablar 4 wieder ein.
+9		Das System informiert den Werker über das Ende dieses Auftrags.
+10	Der Werker schiebt die Kommissionierbox in den Vertikalförderer.	Das System fördert den Behälter zu einem Platz im Auftragspuffer.
+		Das System meldet an SAP die Abarbeitung der ersten Position von Auftrag A5
+		
+11		Das System zeigt im BKS den gesamten BKS-Umfang des Auftrags an:
+5 Befestigungsdrähte.
+12	Ein Bks-Werker nimmt eine Kommissionierbox und scannt sie für den Auftrag ein. 	Das System druckt einen Behälterbeleg  (mit Kontrollfunktion) und ggf. Einzelentnahmebelege.
+13	Der Werker legt den Beleg in die Kommissionierbox. Dann stellt er den Behälter auf die Fördertechnik.	Das System fördert den Behälter zum Regalbereich 2 (dort liegen die Befestigungsdrähte).
+14	Der Bks-Werker in Regal 2 scannt den Behälter.	Das System zeigt auf dem Nummerndisplay des Fachs, in dem die Befestigungsdrähte liegen, die Zahl 5 an.
+15	Der Werker nimmt 5 Befestigungsdrähte aus dem Regal und legt sie in den Behälter.
+Dann bestätigt er die Entnahme durch einen Taster am Fach.	Das System schaltet das Nummerndisplay am Fach aus.
+16	Der Werker stellt den Behälter zurück auf die Fördertechnik.	Das System fördert den Behälter zum Entnahmestich.
+17		Nachdem der Behälter am Entnahmestich angekommen ist, fördert das System den AKL-Behälter zum AKL-Entnahmestich.
+Das System druckt den „echten“ Behälterbeleg.
+Das System informiert SAP über den Abschluss der 2. Position des Auftrags A5.
+18	Zettel reinlegen
+Ein IPunkt-Werker nimmt die Behälter von den Entnahmestichen und stellt sie auf die Zusammenführungs-Rollenbahn.	
+19		Das System zeigt im IPunkt-Bereich den MPL-Teilauftrag an:
+600 Bolzen.
+20	Ein IPunkt-Werker aktiviert den MPL-Anteil.
+	Das System druckt einen Entnahme-Beleg für 600 Bolzen.
+Inhalt: Nimm 600 Bolzen aus Fach 4/57/3.
+21	Der IPunkt-Werker klebt alle Belege auf eine Fahne.	
+22	Ein Kommissionier-Fahrzeug-Fahrer nimmt sich die Fahne.	
+23	Der Fahrer nimmt eine kleine Gitterbox als Kommissionierbehälter auf seine Gabel.	
+24	Der Fahrer fährt zu Fach 4/57/3 und entnimmt dort 600 Bolzen aus der Gitterbox und legt diese in seinen Kommissionierbehälter.	
+25	Der Fahrer stellt den fertigen Kommissionierbehälter auf einen leeren „Fertig-“Platz	
+26	Der Fahrer geht zu einem PC, scannt den Beleg ein und bestätigt die Entnahme.	Das System legt eine Gitterbox mit dem Namen des virtuellen Lagerziels als Behälter an und bucht die Entnahmen in diesen virtuellen Behälter
+
+Das System druckt die Kommissionierliste am IPunkt.
+Inhalt:
+013 Wellen A4 (AKL)
+600 Bolzen (MPL)
+005 Befestigungsdrähte (BKS)
+27		Das System informiert SAP über den Abschluss des Auftrags.
+28	Ein (Zusammenführ-)Staplerfahrer nimmt sich die Kommissionierliste.
+Er holt die Gitterbox aus dem MPL, legt die BKS- und AKL-Umfänge in die Gitterbox und fährt die Gitterbox in die Produktion.	
+
+GAL-03 Auslagerung von Auftragseinzelbestand
+
+GAL-04 Auslagerung von Konsignationsbestand

@@ -2,7 +2,7 @@
 <plugin
 	id="my.first.plugin" name="My First Plugin"
 	version="1.0" provider-name="Coder"
-	class="myplugin.MyPlugin1">
+	class="eu.miaofang.md.examplePlugin.MyPlugin1">
 		<requires>
 			<api version="1.0"/>
 		</requires>

@@ -8,12 +8,12 @@
     
  <!--UML2 Profile - Metamodell-->
  <bean id="mm_topology_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.TopologyProfile.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.TopologyProfile.profile.uml"/>
  </bean>
  
   <!--UML2 Profile - Metamodell-->
  <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
-  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/AE_Phase_Editors.ProcessProfile.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.ProcessProfile.profile.uml"/>
  </bean>
 
 <!-- load model and store it in slot 'model' -->
@@ -27,31 +27,31 @@
   <metaModel idRef="mm_topology_profile"/>
   <expand value="templates::round1::AutomatikTransport::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
-  <outlet path="src-gen">
+  <outlet path="src-gen/platform">
+  <!-- Assume it is in platform -->
    <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
-
 
 <component id="generator2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
   <metaModel idRef="mm_topology_profile"/>
   <expand value="templates::round1::SgmPhysik::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
-  <outlet path="src-gen">
+  <outlet path="src-gen/platform">
+
    <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
+
 
 
 <component id="generator3" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
   <metaModel idRef="mm_process_profile"/>
   <expand value="templates::round1::PeriodicAction::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
-  <outlet path="src-gen/processes">
-   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  <outlet path="src-gen/Akl">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
 
 </workflow>
-
-
