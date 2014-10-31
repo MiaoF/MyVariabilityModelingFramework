@@ -23,18 +23,20 @@ import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 import eu.miaofang.md.plugin.model.WmsModelType;
 import eu.miaofang.md.plugin.model.component.WmsComponent;
 import eu.miaofang.md.plugin.model.component.WmsCompositeComponent;
+import eu.miaofang.md.plugin.model.component.instances.RootComponent;
 import eu.miaofang.wms.plugin.config.PlugInConstants;
 
-public class ComponentDiagramBuilder {
+public class RootComponentDiagramBuilder {
+
 	Diagram diagram;
 	WmsModelType diagramType;
 	Namespace namespace;
 
-	public ComponentDiagramBuilder(WmsModelType modelType,
-			Namespace theOwnerPackage, WmsCompositeComponent theComponent,
+	public RootComponentDiagramBuilder(WmsModelType modelType,
+			Namespace theOwnerPackage, RootComponent theComponent,
 			Project activeProject) {
 		try {
-			SessionManager.getInstance().createSession("Create New Diagram");
+			SessionManager.getInstance().createSession("Create Root Diagram");
 			diagram = ModelElementsManager.getInstance().createDiagram(
 					modelType.getModelType(), theOwnerPackage);
 			diagram.setName(modelType.getModelName());
@@ -46,6 +48,74 @@ public class ComponentDiagramBuilder {
 			// initialzeDiagram(modelType, diagram, theComponent);
 		} catch (ReadOnlyElementException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void addVariableElments(RootComponent theComponent,
+			Project activeProject) {
+		DiagramPresentationElement diagramPresentationElement = Project
+				.getProject(diagram).getDiagram(diagram);
+		int locationY = 210;
+		int locationX = 60;
+		for (WmsComponent subComponent : theComponent.getBusinessComponents()) {
+			Component componentElement = activeProject.getElementsFactory()
+					.createComponentInstance();
+			componentElement.setName(subComponent.getComponentName());
+			Profile componentProfile = StereotypesHelper.getProfile(
+					activeProject, PlugInConstants.COMPONENTE_PROFILE);
+			Stereotype type = StereotypesHelper.getStereotype(activeProject,
+					subComponent.getComponentType(), componentProfile);
+			if (StereotypesHelper.canApplyStereotype(componentElement, type))
+				StereotypesHelper.addStereotype(componentElement, type);
+			PresentationElementsManager presentationManager = PresentationElementsManager
+					.getInstance();
+			try {
+				ModelElementsManager.getInstance().addElement(componentElement,
+						diagram.getOwner());
+				ShapeElement shapeElement = presentationManager
+						.createShapeElement(componentElement,
+								diagramPresentationElement);
+				// diagramPresentationElement
+				// .sAddPresentationElement(shapeElement);
+				shapeElement.setLocation(locationX, locationY);
+				locationX += 140;
+				// StereotypesHelper.setStereotypePropertyValue(componentElement,
+				// type, "Name", subComponent.getComponentName() );
+			} catch (ReadOnlyElementException e) {
+				e.printStackTrace();
+			}
+		}
+
+		locationY = 420;
+		locationX = 600;
+
+		for (WmsComponent subComponent : theComponent.getPlatformComponents()) {
+			Component componentElement = activeProject.getElementsFactory()
+					.createComponentInstance();
+			componentElement.setName(subComponent.getComponentName());
+			Profile componentProfile = StereotypesHelper.getProfile(
+					activeProject, PlugInConstants.COMPONENTE_PROFILE);
+			Stereotype type = StereotypesHelper.getStereotype(activeProject,
+					subComponent.getComponentType(), componentProfile);
+			if (StereotypesHelper.canApplyStereotype(componentElement, type))
+				StereotypesHelper.addStereotype(componentElement, type);
+			PresentationElementsManager presentationManager = PresentationElementsManager
+					.getInstance();
+			try {
+				ModelElementsManager.getInstance().addElement(componentElement,
+						diagram.getOwner());
+				ShapeElement shapeElement = presentationManager
+						.createShapeElement(componentElement,
+								diagramPresentationElement);
+				diagramPresentationElement
+						.sAddPresentationElement(shapeElement);
+				shapeElement.setLocation(locationX, locationY);
+				locationX += 140;
+				// StereotypesHelper.setStereotypePropertyValue(componentElement,
+				// type, "Name", subComponent.getComponentName() );
+			} catch (ReadOnlyElementException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -64,45 +134,6 @@ public class ComponentDiagramBuilder {
 						diagramPresentationElement);
 			}
 		}
-	}
-
-	public void addVariableElments(WmsCompositeComponent theComponent,
-			Project activeProject) {
-		DiagramPresentationElement diagramPresentationElement = Project
-				.getProject(diagram).getDiagram(diagram);
-		diagramPresentationElement.ensureLoaded();
-		int locationY = 210;
-		int locationX = 60;
-		for (WmsComponent subComponent : theComponent.getChildComponents()) {
-			Component componentElement = activeProject.getElementsFactory()
-					.createComponentInstance();
-			componentElement.setName(subComponent.getComponentName());
-			Profile componentProfile = StereotypesHelper.getProfile(
-					activeProject, PlugInConstants.COMPONENTE_PROFILE);
-			Stereotype type = StereotypesHelper.getStereotype(activeProject,
-					subComponent.getComponentType(), componentProfile);
-			if (StereotypesHelper.canApplyStereotype(componentElement, type))
-				StereotypesHelper.addStereotype(componentElement, type);
-
-			PresentationElementsManager presentationManager = PresentationElementsManager
-					.getInstance();
-			try {
-				ModelElementsManager.getInstance().addElement(componentElement,
-						diagram.getOwner());
-				ShapeElement shapeElement = presentationManager
-						.createShapeElement(componentElement,
-								diagramPresentationElement);
-				shapeElement.setLocation(locationX, locationY);
-				locationX += 140;
-				diagramPresentationElement
-						.sAddPresentationElement(shapeElement);
-				// StereotypesHelper.setStereotypePropertyValue(componentElement,
-				// type, "Name", subComponent.getComponentName() );
-			} catch (ReadOnlyElementException e) {
-				e.printStackTrace();
-			}
-		}
-
 	}
 
 	protected void addPresentationElementsRecursively(

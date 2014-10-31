@@ -55,6 +55,7 @@ public class FeatureEditorView {
 		dialog.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		dialog.setSize(300, 400);
 		dialog.setTitle("Feature Configuration");
+		dialog.setAlwaysOnTop(true);
 		dialog.setVisible(true);
 		checkTreeBoxForMandatoryFeatures(rootNode);
 	}

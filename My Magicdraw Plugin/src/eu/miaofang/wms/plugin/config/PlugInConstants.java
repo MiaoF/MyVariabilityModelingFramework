@@ -27,6 +27,8 @@ public class PlugInConstants {
 	public static final String INVENTORY_FEATURE_NAME = "Inventory";
 	public static final String AKL_ORDER_PROCESSING_FEATURE_NAME = "AKL_ORDER_PROCESSING";
 	public static final String MPL_ORDER_PROCESSING_FEATURE_NAME = "MPL_ORDER_PROCESSING";
+	public static final String ORACLE_FEATURE_NAME = "Oracle";
+	public static final String SQL_SERVER_FEATURE_NAME = "SqlServer";
 
 	private PlugInConstants() {
 

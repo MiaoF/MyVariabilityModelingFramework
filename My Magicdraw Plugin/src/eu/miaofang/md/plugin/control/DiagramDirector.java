@@ -1,8 +1,6 @@
 package eu.miaofang.md.plugin.control;
 
-import java.util.Collection;
-import java.util.List;
-
+import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 
 import com.nomagic.magicdraw.copypaste.CopyPasting;
@@ -13,12 +11,12 @@ import com.nomagic.magicdraw.openapi.uml.ReadOnlyElementException;
 import com.nomagic.magicdraw.openapi.uml.SessionManager;
 import com.nomagic.magicdraw.uml.BaseElement;
 import com.nomagic.magicdraw.uml.symbols.DiagramPresentationElement;
-import com.nomagic.magicdraw.uml.symbols.PresentationElement;
 import com.nomagic.magicdraw.uml.symbols.shapes.ShapeElement;
 import com.nomagic.uml2.ext.jmi.helpers.StereotypesHelper;
 import com.nomagic.uml2.ext.magicdraw.activities.mdfundamentalactivities.Activity;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Diagram;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Namespace;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Package;
 import com.nomagic.uml2.ext.magicdraw.components.mdbasiccomponents.Component;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Profile;
@@ -29,6 +27,7 @@ import eu.miaofang.md.plugin.control.builder.ComponentDiagramBuilder;
 import eu.miaofang.md.plugin.control.builder.DiagramBuilder;
 import eu.miaofang.md.plugin.control.builder.FeatureConfigurationDiagramBuilder;
 import eu.miaofang.md.plugin.control.builder.ProcessDiagramBuilder;
+import eu.miaofang.md.plugin.control.builder.RootComponentDiagramBuilder;
 import eu.miaofang.md.plugin.model.FeatureToComponentMapper;
 import eu.miaofang.md.plugin.model.WmsModelType;
 import eu.miaofang.md.plugin.model.component.WmsComponent;
@@ -71,7 +70,6 @@ public class DiagramDirector {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	private Package createPackageHierarchy(Package magicdrawPackage,
@@ -80,37 +78,42 @@ public class DiagramDirector {
 				theComponent.getComponentName());
 		ElementsFactory factory = activeProject.getElementsFactory();
 		Package subMagicDrawPackage = factory.createPackageInstance();
-		
-		subMagicDrawPackage.setName(theComponent.getComponentName() + "_ToConfigure");
+		subMagicDrawPackage.setName(theComponent.getComponentName()
+				+ "_ToConfigure");
 		if (magicdrawPackage != null)
 			subMagicDrawPackage.setOwner(magicdrawPackage);
 		else {
 			subMagicDrawPackage.setOwner(activeProject.getModel());
 		}
-		for (WmsModelType modelType : theComponent.getContainedModels()) {
-			DiagramBuilder builder = null;
-			Diagram diagram;
-			Activity context;
-			// put WmsProcess into an activity (required by MagicDraw)
-			if (modelType.getModelType().equals(PlugInConstants.PROCESS_MODEL)) {
-				
-				context = factory.createActivityInstance();
-				builder = new ProcessDiagramBuilder(modelType, context);
-				diagram = builder.getDiagram();
-//						createDiagram(modelType, context);
-				context.setOwner(subMagicDrawPackage);
-			} else if (modelType.getModelType().equals(PlugInConstants.COMPONENT_MODEL)) {
-				builder = new ComponentDiagramBuilder(modelType, subMagicDrawPackage);
-				builder.addInvariableElments(theComponent, activeProject);
-				builder.addVariableElments(theComponent, activeProject);
-			} else if (modelType.getModelType().equals(PlugInConstants.SELECTED_FEATURE_MODEL)){
-				builder = new FeatureConfigurationDiagramBuilder(modelType, subMagicDrawPackage);
-//				diagram = createDiagram(modelType, subMagicDrawPackage,
-//						theComponent);
-			}
-//			diagram.setName(modelType.getModelName());
-		}
 		SessionManager.getInstance().closeSession();
+		for (WmsModelType modelType : theComponent.getContainedModels()) {
+			Activity context;
+			if (modelType.getModelType().equals(PlugInConstants.PROCESS_MODEL)) {
+				// put WmsProcess into an activity (required by MagicDraw)
+				context = factory.createActivityInstance();
+				context.setOwner(subMagicDrawPackage);
+				new ProcessDiagramBuilder(modelType,
+						context, theComponent, activeProject);
+			} else if (modelType.getModelType().equals(PlugInConstants.COMPONENT_MODEL)) {
+				if (theComponent.equals(featureManager.getRootComponent())) {
+					new RootComponentDiagramBuilder(
+							modelType, subMagicDrawPackage, (RootComponent)theComponent, activeProject);
+				} else {
+					new ComponentDiagramBuilder(
+							modelType, subMagicDrawPackage, theComponent, activeProject);
+					
+				}
+			} else if (modelType.getModelType().equals(
+					PlugInConstants.SELECTED_FEATURE_MODEL)) {
+				new FeatureConfigurationDiagramBuilder(
+						modelType, subMagicDrawPackage, theComponent, activeProject);
+			} else if (modelType.getModelType().equals(
+					PlugInConstants.TOPOLOGY_MODEL)) {
+				new DiagramBuilder(modelType,
+						subMagicDrawPackage, theComponent, activeProject);
+			}
+
+		}
 		for (WmsComponent subComponent : theComponent.getChildComponents()) {
 			if (subComponent.getContainedModels().size() > 0)
 				createPackageHierarchy(subMagicDrawPackage,
@@ -118,110 +121,4 @@ public class DiagramDirector {
 		}
 		return subMagicDrawPackage;
 	}
-
-//	private Diagram createDiagram(WmsModelType modelType,
-//			Package theOwnerPackage, WmsCompositeComponent theComponent) {
-//		Diagram diagram = null;
-//		try {
-//			diagram = ModelElementsManager.getInstance().createDiagram(
-//					modelType.getModelType(), theOwnerPackage);
-//			initialzeDiagram(modelType, diagram, theComponent);
-//		} catch (ReadOnlyElementException e) {
-//			e.printStackTrace();
-//		}
-//		return diagram;
-//	}
-//
-//	private void initialzeDiagram(WmsModelType modelType,
-//			Diagram targetDiagram, WmsCompositeComponent theComponent) {
-//		if (modelType.getModelType().equals(PlugInConstants.COMPONENT_MODEL)) {
-//			addInvariableComponents(modelType, targetDiagram);
-//			addVariableComponents(modelType, targetDiagram, theComponent);
-//		}
-//		
-//		if (modelType.getModelType().equals(PlugInConstants.SELECTED_FEATURE_MODEL)) {
-////			
-//		}
-//	}
-
-//	private void addVariableComponents(WmsModelType modelType,
-//			Diagram targetDiagram, WmsCompositeComponent theComponent) {
-//		DiagramPresentationElement diagramPresentationElement = Project
-//				.getProject(targetDiagram).getDiagram(targetDiagram);
-//		int locationY = 210;
-//		int locationX = 60;
-//		for (WmsComponent subComponent : theComponent.getChildComponents()) {
-//			Component componentElement = activeProject.getElementsFactory()
-//					.createComponentInstance();
-//			componentElement.setName(subComponent.getComponentName());
-//			Profile componentProfile = StereotypesHelper.getProfile(
-//					activeProject, PlugInConstants.COMPONENTE_PROFILE);
-//			Stereotype type = StereotypesHelper.getStereotype(activeProject,
-//					subComponent.getComponentType(), componentProfile);
-//			if (StereotypesHelper.canApplyStereotype(componentElement, type))
-//				StereotypesHelper.addStereotype(componentElement, type);
-//
-//			PresentationElementsManager presentationManager = PresentationElementsManager
-//					.getInstance();
-//			try {
-//				ModelElementsManager.getInstance().addElement(componentElement,
-//						targetDiagram.getOwner());
-//				ShapeElement shapeElement = presentationManager.createShapeElement(componentElement,
-//						diagramPresentationElement);
-//				shapeElement.setLocation(locationX, locationY);
-//				locationX += 140;
-////				StereotypesHelper.setStereotypePropertyValue(componentElement, type, "Name", subComponent.getComponentName() );
-//			} catch (ReadOnlyElementException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//	}
-//
-//	private void addInvariableComponents(WmsModelType modelType,
-//			Diagram targetDiagram) {
-//		Collection<DiagramPresentationElement> allDiagrams = activeProject
-//				.getDiagrams();
-//		for (DiagramPresentationElement existingDiagram : allDiagrams) {
-//			String name = existingDiagram.getHumanName();
-//			if (name.endsWith(modelType.getModelTemplate())) {
-//				existingDiagram.ensureLoaded();
-//				DiagramPresentationElement diagramPresentationElement = Project
-//						.getProject(targetDiagram).getDiagram(targetDiagram);
-//				addPresentationElementsRecursively(existingDiagram.getPresentationElements(),
-//						diagramPresentationElement);
-//			}
-//		}
-//	}
-//
-//	private void addPresentationElementsRecursively(
-//			List<PresentationElement> elementsToAdd,
-//			DiagramPresentationElement diagramPresentationElement) {
-//		for (PresentationElement e : elementsToAdd) {
-//			PresentationElement clonedElement;
-//			try {
-//				clonedElement = (PresentationElement) e.clone();
-//				diagramPresentationElement
-//						.sAddPresentationElement(clonedElement);
-//			} catch (CloneNotSupportedException e1) {
-//				e1.printStackTrace();
-//			}
-//			if(e.getPresentationElementCount() > 0)
-//				addPresentationElementsRecursively(e.getPresentationElements(), diagramPresentationElement);
-//
-//		}
-//	}
-//
-//	private Diagram createDiagram(WmsModelType modelType,
-//			Activity theOwnerPackage) {
-//		Diagram diagram = null;
-//		try {
-//			diagram = ModelElementsManager.getInstance().createDiagram(
-//					modelType.getModelType(), theOwnerPackage);
-//		} catch (ReadOnlyElementException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return diagram;
-//	}
 }

@@ -13,6 +13,9 @@ public class WmsComponent {
 	public WmsComponent() {
 
 	}
+	public WmsComponent(String name) {
+		componentName = name;
+	}
 	
 	public String getComponentName() {
 		return componentName;

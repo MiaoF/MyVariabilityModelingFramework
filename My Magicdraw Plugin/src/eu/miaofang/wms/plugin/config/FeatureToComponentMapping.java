@@ -19,7 +19,10 @@ public class FeatureToComponentMapping {
 		featureToComponent.put(PlugInConstants.MPL_PICKING_STAPLER_FEATURE_NAME, new WmsComponent());
 		featureToComponent.put(PlugInConstants.MPL_DISTRIBUTION_STAPlER_FEATURE_NAME, new WmsComponent());
 		featureToComponent.put(PlugInConstants.MPL_HEAVYLOAD_STAPLER_FEATURE_NAME, new WmsComponent());
+		featureToComponent.put(PlugInConstants.MPL_HEAVYLOAD_STAPLER_FEATURE_NAME, new WmsComponent());
 		featureToComponent.put(PlugInConstants.INVENTORY_FEATURE_NAME, new InventoryComponent());
+		featureToComponent.put(PlugInConstants.SQL_SERVER_FEATURE_NAME, new WmsComponent(PlugInConstants.SQL_SERVER_FEATURE_NAME));
+		featureToComponent.put(PlugInConstants.ORACLE_FEATURE_NAME, new WmsComponent(PlugInConstants.ORACLE_FEATURE_NAME));
 	}
 
 	
