@@ -90,10 +90,10 @@ public class DiagramDirector {
 			Activity context;
 			if (modelType.getModelType().equals(PlugInConstants.PROCESS_MODEL)) {
 				// put WmsProcess into an activity (required by MagicDraw)
-				context = factory.createActivityInstance();
-				context.setOwner(subMagicDrawPackage);
+//				context = factory.createActivityInstance();
+//				context.setOwner(subMagicDrawPackage);
 				new ProcessDiagramBuilder(modelType,
-						context, theComponent, activeProject);
+						subMagicDrawPackage, theComponent, activeProject);
 			} else if (modelType.getModelType().equals(PlugInConstants.COMPONENT_MODEL)) {
 				if (theComponent.equals(featureManager.getRootComponent())) {
 					new RootComponentDiagramBuilder(
@@ -101,7 +101,6 @@ public class DiagramDirector {
 				} else {
 					new ComponentDiagramBuilder(
 							modelType, subMagicDrawPackage, theComponent, activeProject);
-					
 				}
 			} else if (modelType.getModelType().equals(
 					PlugInConstants.SELECTED_FEATURE_MODEL)) {

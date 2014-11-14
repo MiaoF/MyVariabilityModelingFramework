@@ -1,9 +1,14 @@
 package eu.miaofang.md.plugin.control.builder;
 
+import java.util.Collection;
+import java.util.List;
+
 import com.nomagic.magicdraw.core.Project;
 import com.nomagic.magicdraw.openapi.uml.ModelElementsManager;
 import com.nomagic.magicdraw.openapi.uml.ReadOnlyElementException;
 import com.nomagic.magicdraw.openapi.uml.SessionManager;
+import com.nomagic.magicdraw.uml.symbols.DiagramPresentationElement;
+import com.nomagic.magicdraw.uml.symbols.PresentationElement;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Diagram;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Namespace;
 
@@ -45,5 +50,6 @@ public class DiagramBuilder {
 			Project activeProject) {
 		
 	}
+	
 
 }

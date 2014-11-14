@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
+import javax.swing.JOptionPane;
+
 import eu.miaofang.md.plugin.model.SelectedFeature;
 import eu.miaofang.wms.plugin.config.FeatureToComponentMapping;
+import eu.miaofang.wms.plugin.config.PlugInConstants;
 
 public class WmsCompositeComponent extends WmsComponent{
+	protected String componentType = PlugInConstants.MULTI_VARIABLE_COMPONENT;
 	protected HashMap<String, Boolean> optionalSubComponents = new HashMap<String, Boolean>();
 	protected List<String> commonSubComponents = new ArrayList<String>();
 	

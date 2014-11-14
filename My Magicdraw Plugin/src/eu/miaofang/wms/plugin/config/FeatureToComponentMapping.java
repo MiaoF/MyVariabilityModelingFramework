@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import eu.miaofang.md.plugin.model.component.WmsComponent;
 import eu.miaofang.md.plugin.model.component.instances.AutomaticSmallPartsStorageComponent;
+import eu.miaofang.md.plugin.model.component.instances.AutomaticTransportComponent;
 import eu.miaofang.md.plugin.model.component.instances.InventoryComponent;
 import eu.miaofang.md.plugin.model.component.instances.LargePartsStorageComponent;
 import eu.miaofang.md.plugin.model.component.instances.PickByLightStorageComponent;
@@ -21,6 +22,7 @@ public class FeatureToComponentMapping {
 		featureToComponent.put(PlugInConstants.MPL_HEAVYLOAD_STAPLER_FEATURE_NAME, new WmsComponent());
 		featureToComponent.put(PlugInConstants.MPL_HEAVYLOAD_STAPLER_FEATURE_NAME, new WmsComponent());
 		featureToComponent.put(PlugInConstants.INVENTORY_FEATURE_NAME, new InventoryComponent());
+		featureToComponent.put("AutomaticSmallPartsStorage", new AutomaticTransportComponent());
 		featureToComponent.put(PlugInConstants.SQL_SERVER_FEATURE_NAME, new WmsComponent(PlugInConstants.SQL_SERVER_FEATURE_NAME));
 		featureToComponent.put(PlugInConstants.ORACLE_FEATURE_NAME, new WmsComponent(PlugInConstants.ORACLE_FEATURE_NAME));
 	}

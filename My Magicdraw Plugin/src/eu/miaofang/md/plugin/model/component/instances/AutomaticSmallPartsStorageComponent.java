@@ -13,10 +13,10 @@ public class AutomaticSmallPartsStorageComponent extends WmsCompositeComponent{
 		setComponentType(PlugInConstants.MULTI_VARIABLE_COMPONENT);
 		modelSuite.setModelPakcageName(this.getComponentName());
 		addNewModelType(new WmsModelType("AKL-TopologyModel", PlugInConstants.TOPOLOGY_MODEL));
-		addNewModelType(new WmsModelType("AKL-OrderProcessing", PlugInConstants.PROCESS_MODEL));
+		addNewModelType(new WmsModelType("AKL-OrderProcessing", PlugInConstants.PROCESS_MODEL, "PeriodicProcess"));
 		addNewModelType(new WmsModelType("AKL-GoodsIn-CreateBox", PlugInConstants.PROCESS_MODEL));
 		addNewModelType(new WmsModelType("AKL-Components", PlugInConstants.COMPONENT_MODEL, "WmsCompositeComponent"));
 		
-		optionalSubComponents.put(PlugInConstants.AKL_ORDER_PROCESSING_FEATURE_NAME, false);
+		optionalSubComponents.put("AutomaticSmallPartsStorage", false);
 	}
 }

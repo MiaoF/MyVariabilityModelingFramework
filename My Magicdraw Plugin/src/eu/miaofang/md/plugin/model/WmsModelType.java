@@ -4,7 +4,7 @@ public class WmsModelType {
 	
 	private String modelName;
 	private String modelType;
-	private String modelTemplate;
+	private String modelTemplate = null;
 	
 	public WmsModelType(String name, String diagramType) {
 		modelName = name;

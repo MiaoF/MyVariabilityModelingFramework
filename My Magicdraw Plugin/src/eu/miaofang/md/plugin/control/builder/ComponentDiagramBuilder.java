@@ -71,7 +71,7 @@ public class ComponentDiagramBuilder {
 		DiagramPresentationElement diagramPresentationElement = Project
 				.getProject(diagram).getDiagram(diagram);
 		diagramPresentationElement.ensureLoaded();
-		int locationY = 210;
+		int locationY = 310;
 		int locationX = 60;
 		for (WmsComponent subComponent : theComponent.getChildComponents()) {
 			Component componentElement = activeProject.getElementsFactory()
