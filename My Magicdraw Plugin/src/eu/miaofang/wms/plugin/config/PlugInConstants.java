@@ -4,9 +4,17 @@ public class PlugInConstants {
 
 	// Component types mapping to MagicDraw Model
 	public static final String ATOMIC_COMPONENT = "AtomicComponent";
+//	public static final String COMPOSITE_COMPONENT = "MultiVariableComponent";
+	public static final String COMPOSITE_COMPONENT = "CompositeComponent";
+	
+	
+	
+	
+	public static final String VARIABLE_COMPONENT = "VariableComponent";
+	public static final String INVARIABLE_COMPONENT = "InvariableComponent";
 	public static final String TOPOLOGY_VARIABLE_COMPONENT = "TopologyVariableComponent";
-	public static final String BEHAVIOR_VARIABLE_COMPONENT = "BehaviorVariableComponent";
-	public static final String MULTI_VARIABLE_COMPONENT = "MultiVariableComponent";
+	public static final String BEHAVIOR_VARIABLE_COMPONENT = "ProcessVariableComponent";
+	
 
 	// Profile types mapping to MagicDraw Meta Model
 	public static final String COMPONENTE_PROFILE = "ComponentMetaModel";

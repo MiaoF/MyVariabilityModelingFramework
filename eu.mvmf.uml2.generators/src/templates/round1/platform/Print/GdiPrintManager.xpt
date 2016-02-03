@@ -1,0 +1,150 @@
+«DEFINE Root FOR uml::Model»
+«FILE "GdiPrintManager.cs"»    
+//******************************************************************************
+// NAME: GdiPrintManager.cs
+//******************************************************************************
+//
+// Description:
+//
+//******************************************************************************
+// Copyright (C) Siemens AG 2007. Confidential. All rights reserved.
+//******************************************************************************
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using log4net;
+using Siemens.WarehouseManagement.DataAccess;
+using Siemens.WarehouseManagement.ContractInfrastructure.Expressions;
+using Siemens.WarehouseManagement.ContractInfrastructure.PrintableDocuments;
+using Siemens.WarehouseManagement.Validation;
+
+namespace Siemens.WarehouseManagement.Infrastructure.Printing
+{
+  /// <summary>
+  /// This IPrintingManager implementation use the System.Drawing print functionality
+  /// (GDI). For use an implementation of the AbstractPrintableDocument must be associated
+  /// which extends the GDI base class PrintDocument.
+  /// </summary>
+  public class GdiPrintManager : IPrintingManager
+  {
+
+    #region Properties
+
+    private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+    /// <summary>
+    /// Gets or sets the data access registry.
+    /// </summary>
+    /// <value>The data access registry.</value>
+    [RequiredProperty]
+    public IDataAccessRegistry DataAccessRegistry
+    {
+      get;
+      set;
+    }
+
+    //Convenience Property
+    private IDataAccess DataAccess
+    {
+      get
+      {
+        return DataAccessRegistry.GetDataAccess();
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the list of all printable documents
+    /// </summary>
+    /// <value>
+    /// a Name, Document dictionary containing all printable documents and their names.
+    /// </value>
+    public IDictionary<string, AbstractPrintableDocument> PrintableDocuments { get; set; }
+
+    #endregion
+
+    #region Implementation of IPrintingManager
+
+    /// <summary>
+    /// Prints the document for the given input.
+    /// </summary>
+    /// <param name="documentType">Type of the document.</param>
+    /// <param name="terminalName">Name of the terminal.</param>
+    /// <param name="data">The data.</param>
+    public void Print(DocumentType documentType, string terminalName, PrintData data)
+    {
+      //Determine printer name
+      string printerName = DeterminePrinterName(documentType, terminalName);
+
+      log.DebugFormat("Getting printable document for DocumentType {0}", documentType);
+      AbstractPrintableDocument printableDocument;
+      if (PrintableDocuments.TryGetValue(documentType.Type, out printableDocument))
+      {
+        log.InfoFormat("Found printable document {0} for print job", printableDocument);
+        printableDocument.PrinterName = printerName;
+        printableDocument.Data = data;
+        printableDocument.Print();
+      }
+      else
+      {
+        log.InfoFormat("For DocumentType {0} no PrintableDocument implementation was found!");
+        throw new NoPrintableDocumentFoundException(documentType.Type);
+      }
+    }
+
+    #endregion
+
+    #region private helper methods
+
+    /// <summary>
+    /// Determines the name of the printer.
+    /// <remarks>IMPL:SVC_PRINTER_DETERMINE:IMPL</remarks>
+    /// </summary>
+    /// <param name="documentType">Type of the document.</param>
+    /// <param name="terminalName">Name of the terminal.</param>
+    /// <returns></returns>
+    private string DeterminePrinterName(DocumentType documentType, string terminalName)
+    {
+      string printerName = "";
+
+      log.DebugFormat("Determining printer name for DocumentType {0} on Terminal {1}", documentType.Type, terminalName);
+
+      IList<PrinterDetermine> printerDeterminations = DataAccess.SelectAll<PrinterDetermine>(Expression.True);
+      var query = from determination in printerDeterminations
+                  where determination.DocType == documentType.Type && determination.TerName == terminalName
+                  select new { PrinterName = determination.PrnName };
+
+      if (query.Count() > 1)
+      {
+        log.InfoFormat("For DocumentType {0} and Terminal {1} are more then one determination! Aborting!",
+                        documentType.Type, terminalName);
+        throw new ToMuchPrinterDeterminationsException(documentType.Type, terminalName);
+      }
+
+      if (query.Count() == 0)
+      {
+        log.InfoFormat("For DocumentType {0} and Terminal {1} no determination exists! Aborting!",
+                        documentType.Type, terminalName);
+        throw new NoPrinterDeterminationException(documentType.Type, terminalName);
+      }
+
+      foreach (var foundDetermination in query)
+      {
+        printerName = foundDetermination.PrinterName;
+      }
+
+      log.InfoFormat("Found printer {0} for DocumentType {1} on Terminal {2}", printerName, documentType.Type, terminalName);
+
+      return printerName;
+    }
+
+    #endregion
+  }
+}
+
+
+//******************************************************************************
+// Copyright (C) Siemens AG 2007. Confidential. All rights reserved.
+//******************************************************************************
+«ENDFILE»
+«ENDDEFINE»

@@ -1,0 +1,44 @@
+«DEFINE Root FOR uml::Model»
+«FILE "TablaranfordernForm.xaml"»<UserControl x:Class="Sgm.Client.Akl.DPSDialogs.TablaranfordernForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:Templates="clr-namespace:Siemens.WarehouseManagement.DPS.Templates;assembly=DPSClient"
+     xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase">
+    <!-- hier kommt der Entity-Name (Tabelle) rein -->
+    <Templates:GridDialog EntityName="TU">
+
+        <!-- hier könnte eine Filtermöglichkeit bereitgestellt werden -->
+        <Templates:GridDialog.EntityFilter>
+          And(
+              Like(NAME, FilterValue()),
+              Like(LOC_NAME, FilterValue()),
+              Like(LOC_NAME, "1000%")
+              )
+        </Templates:GridDialog.EntityFilter> 
+
+      <!-- hier wird beschrieben, wie das GRID aussehen soll -->
+        <!-- ToDo:Grid anpassen-->
+        <Templates:GridDialog.GridColumnSpecs>
+          <Templates:PropertyColumnSpec Name="NAME" ShortDesc="Tu Name"/>
+          <Templates:PropertyColumnSpec Name="LOC_NAME" ShortDesc="Standort"/>
+        </Templates:GridDialog.GridColumnSpecs>
+        <Templates:GridDialog.GridDefaultSorting>
+          <cm:SortDescription PropertyName="NAME" Direction="Ascending"/>
+        </Templates:GridDialog.GridDefaultSorting>
+
+    <!-- hier wird beschrieben, wie der Editor aussehen soll -->
+        <!-- .. kommt bei INSERT, UPDATE Bearbeitungen           -->
+        <!-- ToDo: Editor-Grid anpassen-->
+        <!--<Templates:GridDialog.EntityEditorSpecs>
+            <Templates:PropertyEditorSpec Name="COLUMN" ShortDesc="ColumnName"/>
+        </Templates:GridDialog.EntityEditorSpecs>-->
+
+        <!-- hier wird beschrieben, wie der Editor aussehen soll -->
+        <Templates:GridDialog.ActionSpecs>
+          <Templates:ButtonSpec Text="Tablar anfordern" Visible="True" Button="F4" NeedsEntity="True" PresenterProperty="AklArbeitsplatzPresenter" MethodName="TablarAnfordern" ReloadData="True" />
+        </Templates:GridDialog.ActionSpecs>
+
+  </Templates:GridDialog>
+</UserControl>
+«ENDFILE»
+«ENDDEFINE»

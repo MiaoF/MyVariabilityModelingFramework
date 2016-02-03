@@ -1,5 +1,5 @@
 package impl;
-import impl.plugin.md.SiemensWMSGenerator;
+import impl.plugin.md.SiemensWmsUmlGenerator;
 
 import com.nomagic.magicdraw.core.Application;
 import com.nomagic.runtime.ApplicationExitedException;
@@ -10,7 +10,7 @@ public class Debug {
 	public static void main(String[] args) {
 		try {
 			FeatureEditor plugin = new FeatureEditor();
-			SiemensWMSGenerator generator = new SiemensWMSGenerator();
+			SiemensWmsUmlGenerator generator = new SiemensWmsUmlGenerator();
 			Application app = Application.getInstance();
 			app.start(true, false, false, args, null);
 			plugin.init();

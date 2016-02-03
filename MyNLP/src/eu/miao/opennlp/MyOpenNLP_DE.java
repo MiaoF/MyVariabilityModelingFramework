@@ -32,8 +32,9 @@ public class MyOpenNLP_DE {
 	public static void main(String[] args) {
 		GermanDocumentReader myReader = new GermanDocumentReader();
 		try {	
-			parseBySentences("de-sgm.txt");
+//			parseBySentences("de-sgm.txt");
 			parseByPOS("de-sgm.txt");
+//			parseByPOS("demo-de-processes.txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

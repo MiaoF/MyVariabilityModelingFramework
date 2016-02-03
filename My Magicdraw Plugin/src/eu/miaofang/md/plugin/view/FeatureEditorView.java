@@ -26,7 +26,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Relationship;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 
-import eu.miaofang.md.plugin.control.DiagramDirector;
+import eu.miaofang.md.plugin.control.ModelInstanceGenerator;
 
 public class FeatureEditorView {
 	private JScrollPane scrollPane;
@@ -163,7 +163,7 @@ public class FeatureEditorView {
 			public void actionPerformed(ActionEvent e) {
 				TreePath checkedPaths[] = checkTreeManager.getSelectionModel()
 						.getSelectionPaths();
-				DiagramDirector modelCreator = new DiagramDirector(project,
+				ModelInstanceGenerator modelCreator = new ModelInstanceGenerator(project,
 						selectedLayoutDiagram);
 				modelCreator.createModelStructureInMagicdraw(checkedPaths);
 			}

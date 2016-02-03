@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 
 import eu.miaofang.md.plugin.model.component.WmsComponent;
-import eu.miaofang.md.plugin.model.component.WmsCompositeComponent;
+import eu.miaofang.md.plugin.model.component.CompositeComponent;
 import eu.miaofang.md.plugin.model.component.instances.RootComponent;
 import eu.miaofang.md.plugin.view.FeatureTreeNode;
 import eu.miaofang.wms.plugin.config.PlugInConstants;
@@ -31,8 +31,8 @@ public class FeatureToComponentMapper {
 		for(SelectedFeature fe: allSelectedFeatures) {
 			ArrayList<WmsComponent> allComponent = rootComponent.getChildComponents();
 			for(WmsComponent c: allComponent) {
-				if(c.getComponentType().equalsIgnoreCase(PlugInConstants.MULTI_VARIABLE_COMPONENT)) {
-					bindComponentVariability((WmsCompositeComponent)c, fe);
+				if(c.getComponentType().equalsIgnoreCase(PlugInConstants.COMPOSITE_COMPONENT)) {
+					bindComponentVariability((CompositeComponent)c, fe);
 				}
 			}
 		}
@@ -46,7 +46,7 @@ public class FeatureToComponentMapper {
 		}
 	}
 	
-	private void bindComponentVariability(WmsCompositeComponent c, SelectedFeature feature) {
+	private void bindComponentVariability(CompositeComponent c, SelectedFeature feature) {
 		if(!c.hasOptionalComponentByFeatureName(feature)) {
 			nonMatchingFeatures.add(feature);
 		}

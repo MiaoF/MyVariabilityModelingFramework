@@ -8,13 +8,13 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 
 import eu.miaofang.md.plugin.model.SelectedFeature;
-import eu.miaofang.md.plugin.model.WmsModelType;
+import eu.miaofang.md.plugin.model.WmsModel;
 import eu.miaofang.md.plugin.model.component.WmsComponent;
-import eu.miaofang.md.plugin.model.component.WmsCompositeComponent;
+import eu.miaofang.md.plugin.model.component.CompositeComponent;
 import eu.miaofang.wms.plugin.config.FeatureToComponentMapping;
 import eu.miaofang.wms.plugin.config.PlugInConstants;
 
-public class RootComponent extends WmsCompositeComponent{
+public class RootComponent extends CompositeComponent{
 	
 	protected HashMap<String, Boolean> optionalBusinessComponents = new HashMap<String, Boolean>();
 	protected HashMap<String, Boolean> optionalPlatformComponents = new HashMap<String, Boolean>();
@@ -22,10 +22,10 @@ public class RootComponent extends WmsCompositeComponent{
 	public RootComponent() {
 		super();
 		setComponentName("SiemensWMS");
-		setComponentType(PlugInConstants.MULTI_VARIABLE_COMPONENT);
+		setComponentType(PlugInConstants.COMPOSITE_COMPONENT);
 		modelSuite.setModelPakcageName(this.getComponentName());
-		addNewModelType(new WmsModelType("System Component", PlugInConstants.COMPONENT_MODEL, "WmsComponents"));
-		addNewModelType(new WmsModelType("Selected Features", PlugInConstants.SELECTED_FEATURE_MODEL));
+		addNewModelType(new WmsModel("System Component", PlugInConstants.COMPONENT_MODEL, "WmsComponents"));
+		addNewModelType(new WmsModel("Selected Features", PlugInConstants.SELECTED_FEATURE_MODEL));
 		
 		optionalBusinessComponents.put(PlugInConstants.AKL_FEATURE_NAME, false);
 		optionalBusinessComponents.put(PlugInConstants.BKS_FEATURE_NAME, false);

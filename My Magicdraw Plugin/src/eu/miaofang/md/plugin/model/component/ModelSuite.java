@@ -2,10 +2,11 @@ package eu.miaofang.md.plugin.model.component;
 
 import java.util.ArrayList;
 
-import eu.miaofang.md.plugin.model.WmsModelType;
+import eu.miaofang.md.plugin.model.WmsModel;
 
 public class ModelSuite {
 	protected String modelPakcageName = "";
+	protected ArrayList<WmsModel> containedModels = new ArrayList<WmsModel>();
 
 	public ModelSuite() {
 		
@@ -23,17 +24,15 @@ public class ModelSuite {
 		this.modelPakcageName = modelPakcageName;
 	}
 
-	protected ArrayList<WmsModelType> containedModels = new ArrayList<WmsModelType>();
-
-	public ArrayList<WmsModelType> getContainedModels() {
+	public ArrayList<WmsModel> getContainedModels() {
 		return containedModels;
 	}
 
-	public void setContainedModels(ArrayList<WmsModelType> containedModels) {
+	public void setContainedModels(ArrayList<WmsModel> containedModels) {
 		this.containedModels = containedModels;
 	}
 
-	public void add(WmsModelType warehouseModelType) {
+	public void add(WmsModel warehouseModelType) {
 		this.containedModels.add(warehouseModelType);
 	}
 

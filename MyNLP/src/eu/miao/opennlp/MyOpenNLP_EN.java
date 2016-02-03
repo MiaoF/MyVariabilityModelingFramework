@@ -35,13 +35,14 @@ public class MyOpenNLP_EN {
 			// parseByPOS("goodsOut.txt");
 //
 //			System.out.println("====Summary====");
-			parseBySentences("AllThreeFull.txt");
+//			parseBySentences("AllThreeFull.txt");
+//			parseByPOS("demo-en-processes.txt");
 //			parseByPOS("all.txt");
 			
-			
+//			
 //			parseBySentences("AllThreeFull.txt");
 //			parseByPOS("example.txt");
-//			parseByPOS("AllThreeFull.txt");
+			parseByPOS("AllThreeFull.txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

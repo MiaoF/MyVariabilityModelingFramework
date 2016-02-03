@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <workflow>
+<property name="path" value="src-gen" />
  <!-- set up EMF for standalone execution -->
  <bean class="org.eclipse.emf.mwe.utils.StandaloneSetup" platformUri=".." />
 
@@ -10,6 +11,11 @@
  <bean id="mm_topology_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
   <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.TopologyProfile.profile.uml"/>
  </bean>
+ 
+ <!--UML2 Profile - Metamodell-->
+<bean id="mm_component_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+<profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ComponentMetaModel.profile.uml"/>
+</bean>
  
   <!--UML2 Profile - Metamodell-->
  <bean id="mm_process_profile" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
@@ -22,24 +28,393 @@
   <modelSlot value="model" />
 </component>
 
-
-<component id="generator1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
-  <metaModel idRef="mm_topology_profile"/>
-  <expand value="templates::round1::AutomatikTransport::Root FOR model"/>
+<component id="generator-platform-control.center1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::ControlCenter::AssemblyInfo::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
-  <outlet path="src-gen/platform">
-  <!-- Assume it is in platform -->
+  <outlet path="src-gen/platform/Server/ControlCenter">
    <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
 
-<component id="generator2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
-  <metaModel idRef="mm_topology_profile"/>
-  <expand value="templates::round1::SgmPhysik::Root FOR model"/>
+<component id="generator-platform-control.center2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::ControlCenter::ControlCenter::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
-  <outlet path="src-gen/platform">
-
+  <outlet path="src-gen/platform/Server/ControlCenter">
    <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+<component id="generator-platform-control.center3" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::ControlCenter::ControlCenterSynchronizer::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/Server/ControlCenter">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+<component id="generator-platform-control.center4" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::ControlCenter::IControlCenter::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/Server/ControlCenter">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator-platform-control.center5" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::ControlCenter::IControlCenterSynchronizer::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/Server/ControlCenter">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator-platform-contractInfra1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::ContractInfrastructure::PresenterFault::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/Commons/ContractInfrastructure">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+<component id="generator-platform-contractInfra2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::ContractInfrastructure::AssemblyInfo::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/Commons/ContractInfrastructure">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator-platform-deliverMaga1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::DeliverManagementContracts::IDeliveryManagementPresenter::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/Commons/DeliverManagementContracts">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator-platform-deliverMaga2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::DeliverManagementContracts::AssemblyInfo::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/Commons/DeliverManagementContracts">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator-solution-statistik1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::solution::statistics::BestandsArchiverung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Sgm.Base/Statistik">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator-solution-statistik1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::solution::statistics::IStatistik::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Sgm.Base/Statistik">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator-platform-dataAcc1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::DataAccess::AbstractDatabase::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/server/Infrastructure/DataAccess">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator2.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_component_profile"/>
+  <expand value="templates::round1::platform::DataAccess::DatabaseFactory::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/server/Infrastructure/DataAccess">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+
+<component id="generator-oracle" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <expand value="templates::round1::platform::DataAccess::SqlDatabase::Root FOR model"/>
+  <metaModel idRef="mm_component_profile"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/platform/server/Infrastructure/DataAccess">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+
+
+
+<!-- Order Processing in AKL -->
+
+<component id="generator.akl_1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::IAklLagerteil::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl_2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::AklLagerteil::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl_3" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::IAklTransportAktivierungStatus::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl_4" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::IAutomatikTransportObserver::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.orderProcessing_1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::orderProcessing::AklPeriodicAction::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AuftraegeBearbeitung">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.orderProcessing_2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::orderProcessing::IAklTransportAktivierung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AuftraegeBearbeitung">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.orderProcessing_3" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::orderProcessing::IAklTransportGenerierung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AuftraegeBearbeitung">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.emptyBinOrdering" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::emptyBinOrdering::IAklLeerbehaelterBestellung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/LeerbehaelterAuftraege">
+  </outlet>
+ </component>
+ 
+ <component id="generator.akl.emptyBinOrdering" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::inventoryOrder::InventurAuslagerung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/InventurAuslagerung">
+  </outlet>
+ </component>
+ 
+  <component id="generator.akl.emptyBinOrdering" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::emptyBinOrdering::AklLeerbehaelterBestellung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/LeerbehaelterAuftraege">
+  </outlet>
+ </component>
+ 
+<component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::automaticTransport::AutomatikTransport::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+ 
+ <component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::automaticTransport::IAutomatikTransport::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+ 
+ <component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::automaticTransport::ITransportKoordinierung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+ 
+ <component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::automaticTransport::SgmGassenSucheAkl::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+ 
+<component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::tma::AbstractRbgTma::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte/tma">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+ 
+ <component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::tma::CoordinateDirectory::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte/tma">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+<component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::tma::IRbgStatusObserver::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte/tma">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+ <component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::tma::MiscTma::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte/tma">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+<component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::tma::SgmFotTma::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte/tma">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+ 
+<component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::tma::SgmRbgTma::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte/tma">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+<component id="generator.akl.2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::tma::TmaFactory::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/AutomatikTransporte/tma">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+ </component>
+ 
+ <component id="generator.buffer1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::buffer::IPufferPlatzSuche::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/puffer">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.buffer2" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+ <metaModel idRef="mm_topology_profile"/>
+<expand value="templates::round1::akl::buffer::PufferPlatzSuche::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/puffer">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.buffer3" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+ <metaModel idRef="mm_topology_profile"/>
+<expand value="templates::round1::akl::buffer::IPufferVerwaltung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/puffer">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.buffer4" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::buffer::PufferVerwaltung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/puffer">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+<component id="generator.akl.workstation1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::workstation::IAklArbeitsplatzLogik::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/Arbeitsplaetze">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+<component id="generator.akl.workstation1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::workstation::IAklArbeitsplatzVerwaltung::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/Arbeitsplaetze">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+<component id="generator.akl.workstation1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::workstation::AklArbeitsplatzLogik::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/Arbeitsplaetze">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+<component id="generator.akl.workstation1" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_topology_profile"/>
+  <expand value="templates::round1::akl::workstation::AklArbeitsplatzPresenter::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/solution/Akl/Arbeitsplaetze">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+
+
+<component id="generator.akl.UI" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_process_profile"/>
+  <expand value="templates::round1::akl::ui::AklUserInterface::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="src-gen/client/Akl/AuftraegeBearbeitung">
+  	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
 
@@ -47,11 +422,13 @@
 
 <component id="generator3" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
   <metaModel idRef="mm_process_profile"/>
-  <expand value="templates::round1::PeriodicAction::Root FOR model"/>
+  <expand value="templates::round1::MplPeriodicAction::Root FOR model"/>
   <fileEncoding value="ISO-8859-1"/>
-  <outlet path="src-gen/Akl">
+  <outlet path="src-gen/solution/Mpl/AuftraegeBearbeitung">
   	<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
   </outlet>
 </component>
+
+
 
 </workflow>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin
-	id="my.first.plugin" name="My First Plugin"
-	version="1.0" provider-name="Coder"
-	class="eu.miaofang.md.examplePlugin.MyPlugin1">
+	id="eu.miaofang.wms.variability.config" name="WMS Variability Configuration Plugin"
+	version="1.0" provider-name="Miao Fang"
+	class=" eu.miaofang.md.plugin.FeatureEditor">
 		<requires>
 			<api version="1.0"/>
 		</requires>

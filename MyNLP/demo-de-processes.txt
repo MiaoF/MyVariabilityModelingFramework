@@ -1,0 +1,102 @@
+1.1	UC_GOODS_IDENTIFICATION_100
+Vorbedingung:
+Eine Avise wurde angelegt.
+Mindestens eine Avisenposition wurde erzeugt und hat den Status ready oder processing.
+Ablauf:
+1.	Benutzer öffnet den Wareneingangsdialog.
+2.	Benutzer drückt auf Aktualisieren, um alle avisierte Positionen anzuzeigen.
+3.	Der Benutzer wählt eine avisierte Position per Mausklick aus.
+4.	Das System ermittelt die noch offene Menge für diese Avisenposition und zeigt diese im Feld Restmenge an.
+5.	Der Benutzer wählt einen Transport-Typ aus
+6.	Der Benutzer legt für die Avisenposition eine bestimmte Menge zum Einlagern fest.
+7.	Der Benutzer wählt einen Einlagerplatz aus.
+8.	Der Benutzer drückt den Button „TU bilden“.
+9.	Das System(Client) liefert die Informationen TUTyp, Eingelagerte Menge und Wareneingangsplatz an den Server
+10.	Das System(Server) erzeugt einen einzigartigen TuName.
+11.	Das System(Server) erzeugt eine Tu mit dem erstellten TuNamen.
+12.	Das System(Server) erhöht die Anzahl der gelieferten Menge in der Avisenposition
+13.	Das System(Server) meldet das erfolgreiche Anlegen einer TU mittels Übergabe des  TuName der erzeugten Tu an den Client
+14.	Das System(Server) ermittelt den Drucker und druckt anhand des übergebenen TuNamen das Etikett aus (siehe 1.3 „Etikett drucken“)
+15.	Das System(Client) zeigt ein Fenster mit dem erstellten Tunamen an.
+16.	Der Benutzer klebt das ausgedruckte Etikett auf die Transporteinheit.
+17.	Der Benutzer bestätigt die Meldung durch Drücken des Ok-Buttons
+18.	Das System(Client) gibt die Information an den Server weiter.
+19.	Das System(Server) fährt die TU ins Lager.
+
+Nachbedingung:
+       Der Wareneingangdialog ist zu sehen
+
+1.2	UC_GOODS_IDENTIFICATION_101 – Anzeige der Avisenpositionen mittels Filterfunktion angepasst
+Vorbedingung:
+Eine Avise wurde angelegt.
+Mindestens eine Avisenposition wurde erzeugt und hat den Status ready oder processing.
+Ablauf:
+1.	Benutzer öffnet den Wareneingangsdialog.
+2.	Benutzer drückt auf Aktualisieren, um alle avisierte Positionen anzuzeigen.
+3.	Der Benutzer nutzt einer der Filter Status oder Id der Avise.
+4.	Das System zeigt die angepasste gefilterte Ansicht an
+5.	Weiter wie in UC_GOODS_IDENTIFICATION_100 ab Schritt 3
+Nachbedingung:
+       Der Wareneingangdialog ist zu sehen
+1.3	UC_GOODS_IDENTIFICATION_102 – Anzeige der Avisenposition nach Nutzen des Filters ist leer
+Vorbedingung:
+Der Benutzer hat eine AvisenpositionsId, welche im System nicht vorhanden ist
+Ablauf:
+1.	Benutzer öffnet den Wareneingangsdialog.
+2.	Benutzer drückt auf Aktualisieren, um alle avisierte Positionen anzuzeigen.
+3.	Der Benutzer nutzt einer der Filter für Id der Avisenposition, gibt einen Wert ein welcher nicht existiert
+4.	Das System zeigt die leere Ansicht an
+5.	Das System lässt die Buttons grau bzw. funktionslos außer Aktualisieren, Schließen und Neu.
+Nachbedingung:
+       Der Wareneingangsdialog ist zu sehen
+1.4	UC_GOODS_IDENTIFICATION_103 – Der Benutzer versucht eine zu hohe Menge einzulagern
+Vorbedingung:
+Eine Avise wurde angelegt.
+Mindestens eine Avisenposition wurde erzeugt und hat den Status ready oder processing.
+Ablauf:
+1.	Benutzer öffnet den Wareneingangsdialog.
+2.	Benutzer drückt auf Aktualisieren, um alle avisierte Positionen anzuzeigen.
+3.	Der Benutzer wählt eine avisierte Position per Mausklick aus.
+4.	Das System ermittelt die noch offene Menge für diese Avisenposition und zeigt diese im Feld Restmenge an.
+5.	Der Benutzer wählt einen Transport-Typ aus
+6.	Der Benutzer legt für die Avisenposition im Feld „Menge“ eine Anzahl Material zum Einlagern fest. Diese Menge übertrifft zusammen mit der bereits eingelagerten Menge der Avisenposition, die erwartet Menge der Avisenposition.
+7.	Der Benutzer wählt einen Einlagerplatz aus.
+8.	Der Benutzer drückt den Button „TU bilden“.
+9.	Das System(Client) liefert die Informationen TUTyp, Eingelagerte Menge und Wareneingangsplatz an den Server
+10.	Das System(Server) erzeugt einen einzigartigen TuName.
+11.	Das System(Server) erzeugt eine Tu mit dem erstellten TuNamen.
+12.	Das System(Server) erhöht die Anzahl der gelieferten Menge in der Avisenposition
+13.	Das System(Server) ermittelt den Drucker und druckt anhand des übergebenen TuNamen das Etikett aus
+14.	Das System(Client) zeigt eine Meldung mit dem erstellten TuNamen an.
+15.	Der Benutzer klebt das ausgedruckte Etikett auf die Transporteinheit.
+16.	Der Benutzer bestätigt die Meldung durch Drücken des Ok-Buttons
+17.	Das System(Client) gibt die Information an den Server weiter.
+18.	Das System(Server) fährt die TU ins Lager.
+19.	Das System(Client) Zeigt eine negative Restmenge im Feld Restmenge an.
+Nachbedingung:
+       Der Wareneingangsdialog ist zu sehen
+
+1.5	UC_GOODS_IDENTIFICATION_104 – Der Benutzer versucht Material einzulagern, ein oder mehr Pflichtfelder sind leer
+Vorbedingung:
+Eine Avise wurde angelegt.
+Mindestens eine Avisenposition wurde erzeugt und hat den Status ready oder processing.
+Ablauf:
+1.	Benutzer öffnet den Wareneingangsdialog.
+2.	Benutzer drückt auf Aktualisieren, um alle avisierte Positionen anzuzeigen.
+3.	Der Benutzer wählt eine avisierte Position per Mausklick aus.
+4.	Das System ermittelt die noch offene Menge für diese Avisenposition und zeigt diese im Feld Restmenge an.
+5.	Der Benutzer drückt den Button „TU bilden“.
+6.	Das System kontrolliert die Pflichtfelder Avisenposition in der Liste, TUTyp, Menge und Platz und merkt dass nicht alle Pflichtfelder erfüllt sind und löst keine Aktion aus. (Aktiviert TU bilden Button nicht)
+Nachbedingung:
+       Der Wareneingangsdialog ist zu sehen
+1.6	UC_GOODS_IDENTIFICATION_106 – Keine Avisenposition mit Status Ready oder Processing
+Vorbedingung:
+Eine Avise wurde angelegt.
+Keine Avisenposition hat den Status ready oder processing.
+Ablauf:
+1.	Benutzer öffnet den Wareneingangsdialog.
+2.	Benutzer drückt auf Aktualisieren, um alle avisierte Positionen anzuzeigen.
+3.	Das System sucht nach Avisenpositionen mit den Status Ready oder Processing.
+4.	Das System zeigt keine Avisenpositionseinträge in der Tabelle an.
+Nachbedingung:
+       Der Wareneingangsdialog ist zu sehen

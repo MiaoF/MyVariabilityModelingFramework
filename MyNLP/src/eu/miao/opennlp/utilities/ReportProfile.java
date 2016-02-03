@@ -105,8 +105,8 @@ public class ReportProfile {
 //		printWithCollectionAndMap(this.subjectVerbCollection, this.subjectVerbs);
 //		
 		
-//		System.out.println("===========Verb-Direct Objects============");
-//		printWithCollectionAndMap(this.verbDirectObjectCollection, this.verbDirectObject);
+		System.out.println("===========Verb-Direct Objects============");
+		printWithCollectionAndMap(this.verbDirectObjectCollection, this.verbDirectObject);
 
 		
 		
@@ -143,7 +143,7 @@ public class ReportProfile {
 		System.out.println("********************Number of Unique Hits: " + index + "*************");
 		System.out.println("********************Threshold: " + threshold + "*************");
 		System.out.println("************* Items Bigger Than Threshold: " + counter + "*************");
-		System.out.println("************* Sum of All Items Bigger Than Threshold: " + numbersBiggerThanthreshold + "*************(" + rate + ")");
+//		System.out.println("************* Sum of All Items Bigger Than Threshold: " + numbersBiggerThanthreshold + "*************(" + rate + ")");
 		
 		Statistics stat = new Statistics(statistics);
 		

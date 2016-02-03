@@ -1,0 +1,38 @@
+«IMPORT ProcessProfile»
+
+«DEFINE Root FOR uml::Model»
+«EXPAND package FOREACH allOwnedElements().typeSelect(uml::Package).select(e| e.name == "AKL_ToDo")» 
+«ENDDEFINE»
+
+«DEFINE package FOR uml::Package»
+«EXPAND displayAction FOREACH allOwnedElements().typeSelect(DisplayAction)»
+«ENDDEFINE»
+
+
+«DEFINE displayAction FOR DisplayAction»
+«FILE getValue(getAppliedStereotypes().get(0), "formName").toString().trim() +".xaml.cs"»using Siemens.WarehouseManagement.DPS.Templates;
+using System.Windows;
+
+namespace Sgm.Client.Akl.DPSDialogs
+{
+
+  public partial class «getValue(getAppliedStereotypes().get(0), "formName").toString().trim()»
+  {
+    public «getValue(getAppliedStereotypes().get(0), "formName").toString().trim()»()
+    {
+      InitializeComponent();
+      var gridDialog = (GridDialog)Content;
+      #region Buttons anpassen
+       // "Neu Anlegen" Button wird ausgeblendet
+      gridDialog.ButtonPanel[3].Visibility = Visibility.Collapsed;
+      // "Bearbeiten" Button wird ausgeblendet
+      gridDialog.ButtonPanel[4].Visibility = Visibility.Collapsed;
+      // "Löschen" Button wird ausgeblendet
+      gridDialog.ButtonPanel[6].Visibility = Visibility.Collapsed;
+      #endregion Buttons anpassen
+    }
+  }
+}
+«ENDFILE»
+«ENDDEFINE»
+

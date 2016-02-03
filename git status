@@ -1,0 +1,128 @@
+[33mcommit eb26b0d1e2ea770b19f920c3b78e4d209d0c6546[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Fri Nov 14 16:42:33 2014 +0100
+
+    commit only all changes in MD plugin
+
+[33mcommit 9b24be2ebb83352a698cc02784605ce0d163a8e9[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Fri Oct 31 10:38:10 2014 +0100
+
+    Refactoring the MagicDraw Plugin
+
+[33mcommit b1615c0ca190986ab84402359f8541d2dc08e308[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Sun Oct 26 19:30:50 2014 +0100
+
+    refactoring
+
+[33mcommit 5f6bacefbc2b7621a78a442a8da43e674c848356[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Thu Sep 11 17:18:31 2014 +0200
+
+    Updates to My MagicDraw Plugin
+
+[33mcommit 1f173894549a9118c34db03d122d9856be43f62e[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Mon Sep 1 22:58:55 2014 +0200
+
+    Code to use for Feature Configurator
+
+[33mcommit 7d2b2d8598bb3a115a93fb8f9b2bcdbc3d3deabd[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Mon Sep 1 22:30:33 2014 +0200
+
+    Add the main method again
+
+[33mcommit 622d15de74544f49fdf673eb8923403b018e6bcc[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Mon Sep 1 16:52:00 2014 +0200
+
+    For My Own Feature Editor
+
+[33mcommit dede7602a3d381c07eca52c11773d9e6ab71149f[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Thu Aug 14 15:44:28 2014 +0200
+
+    commit to Githut before I rollback Window system
+
+[33mcommit 6318d245aa92992701e904c9746c501cf2145fec[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Wed Jul 30 15:32:16 2014 +0200
+
+    adding the german token
+
+[33mcommit 52ef9d7f798ea670d78e735ce95b0dd6f85137a4[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Tue Jun 17 18:22:36 2014 +0200
+
+    My First Code Generator commit.
+
+[33mcommit ab342c69a4ce8d44ef94e7b6700bc547d225da49[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Fri Jun 13 16:58:09 2014 +0200
+
+    The first version of my UML Paser for retrieving the Eclipse UML2 models
+    that exported from MagicDraw.
+
+[33mcommit 96a726cd4398f2b2e71a9bfe10669fc891ee1e06[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Fri Jun 6 16:51:35 2014 +0200
+
+    some updates to parse exported Eclipse UML2 from MD
+
+[33mcommit 985f667cbc45945c43ca5b765956eff803dfcc7f[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Wed Jun 4 21:07:13 2014 +0200
+
+    init UML2
+
+[33mcommit b8b637ccd5e2322c7fb0ddbd239ac3ffe9f9e5ad[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Wed Jun 4 21:05:48 2014 +0200
+
+    testtest
+
+[33mcommit f931e1791c61c388ceaa3e61bcfa96b6548bcd41[m
+Merge: 4ed855b ce42cd0
+Author: MiaoF <miaofang@gmail.com>
+Date:   Wed Jun 4 21:03:27 2014 +0200
+
+    Merge branch 'master' of https://github.com/MiaoF/MyVariabilityModelingFramework
+
+[33mcommit 4ed855b83b3dc6653a93297ca5b634567573b238[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Wed Jun 4 21:02:15 2014 +0200
+
+    testtest
+
+[33mcommit ce42cd02c38662d94281c0a8e312adf51630012b[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Tue May 27 16:03:49 2014 +0200
+
+    Update README.md
+
+[33mcommit ce6ea0daa67b5eafb288b8c64b7e35a383dc1751[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Tue May 27 16:00:26 2014 +0200
+
+    Create README.md
+
+[33mcommit ce9509c2a78d66867502c845e69b3e522c4c1ea7[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Tue May 27 15:54:40 2014 +0200
+
+    This is an example of creating MagicDraw plug. It pops up a window
+    during startup of MagicDraw.
+
+[33mcommit 407c7f8e4e1df406ce7dd5297cce73f197c4973d[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Fri May 23 17:16:08 2014 +0200
+
+    changed the threshold
+
+[33mcommit 57d70e2663ea35f7fbf77741badb9945ded46e9f[m
+Author: MiaoF <miaofang@gmail.com>
+Date:   Thu May 22 22:43:36 2014 +0200
+
+    MyNLP init
