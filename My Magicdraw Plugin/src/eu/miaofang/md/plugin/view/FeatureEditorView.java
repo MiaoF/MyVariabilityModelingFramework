@@ -39,7 +39,7 @@ public class FeatureEditorView {
 
 	public FeatureEditorView(final Project project,
 			final BaseElement selectedElement) {
-		tree = InitializeTree((Element)selectedElement);
+		tree = InitializeTree((Element) selectedElement);
 		// add a checkBox to every tree node
 		checkTreeManager = new CheckTreeManager(tree);
 
@@ -59,24 +59,22 @@ public class FeatureEditorView {
 		dialog.setVisible(true);
 		checkTreeBoxForMandatoryFeatures(rootNode);
 	}
-	
-	public FeatureEditorView(final Project project,
-			final Element rootFeature, BaseElement selectedElementInMD) {
+
+	public FeatureEditorView(final Project project, final Element rootFeature,
+			BaseElement selectedElementInMD) {
 		this(project, rootFeature);
 		selectedLayoutDiagram = (BaseElement) selectedElementInMD;
 		bindKnownVariability();
 	}
 
 	private void checkTreeBoxForMandatoryFeatures(FeatureTreeNode node) {
-		if(node.isMandatory()) {
+		if (node.isMandatory()) {
 			checkTreeManager.setTreeNodeSelectionByName(node.toString());
 			Enumeration<FeatureTreeNode> childNodes = node.children();
 			while (childNodes.hasMoreElements())
-			checkTreeBoxForMandatoryFeatures(childNodes.nextElement());
+				checkTreeBoxForMandatoryFeatures(childNodes.nextElement());
 		}
 	}
-
-	
 
 	private String getNameToShow(Element magicdrawElement) {
 		// getHumanName() in MagicDraw always contains the type of the element
@@ -114,13 +112,14 @@ public class FeatureEditorView {
 						node.setIcon(FeatureOperatorIconHelper
 								.getIconByStereoType(relation));
 						buildSubTreeWithFeatures(node, firstElement, aFeature);
-						nodeToAppend.add(node);	
+						nodeToAppend.add(node);
 						Stereotype mandatoryStereoType = StereotypesHelper
-								.getAppliedStereotypeByString(relation, "Mandatory");
-						if(mandatoryStereoType != null) {
+								.getAppliedStereotypeByString(relation,
+										"Mandatory");
+						if (mandatoryStereoType != null) {
 							node.setMandatory(true);
 						}
-							
+
 					}
 				}
 			}
@@ -131,7 +130,8 @@ public class FeatureEditorView {
 		Diagram diagram = (Diagram) selectedLayoutDiagram;
 		DiagramPresentationElement diagramPresentationElement = Project
 				.getProject(diagram).getDiagram(diagram);
-		for (PresentationElement e : diagramPresentationElement.getPresentationElements()) {
+		for (PresentationElement e : diagramPresentationElement
+				.getPresentationElements()) {
 			checkCorrespondingTreeNode(e);
 		}
 
@@ -139,15 +139,16 @@ public class FeatureEditorView {
 
 	private void checkCorrespondingTreeNode(PresentationElement e) {
 		Element elementToCheckInTree = e.getElement();
-		Stereotype type = StereotypesHelper
-				.getStereotypes(elementToCheckInTree).get(0);
-		// have to remove "stereotype " from the human name
-		checkTreeManager.setTreeNodeSelectionByName(getNameToShow(type));
+		if (elementToCheckInTree != null) {
+			Stereotype type = StereotypesHelper.getStereotypes(
+					elementToCheckInTree).get(0);
+			// have to remove "stereotype " from the human name
+			checkTreeManager.setTreeNodeSelectionByName(getNameToShow(type));
+		}
 	}
 
 	private JTree InitializeTree(final Element rootFeature) {
-		rootNode = new FeatureTreeNode(
-				getNameToShow(rootFeature), rootFeature);
+		rootNode = new FeatureTreeNode(getNameToShow(rootFeature), rootFeature);
 		rootNode.setMandatory(true);
 		buildSubTreeWithFeatures(rootNode, rootFeature, null);
 		JTree tree = new JTree(rootNode);
@@ -158,13 +159,14 @@ public class FeatureEditorView {
 
 	private JButton createButtonToSaveConfiguration(final Project project,
 			final BaseElement selectedElement) {
-		JButton okButton = new JButton("Generate Model Structure");
+		JButton okButton = new JButton("Create Modeling Space");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				TreePath checkedPaths[] = checkTreeManager.getSelectionModel()
 						.getSelectionPaths();
-				ModelInstanceGenerator modelCreator = new ModelInstanceGenerator(project,
-						selectedLayoutDiagram);
+				ModelInstanceGenerator modelCreator = new ModelInstanceGenerator(
+						project, selectedLayoutDiagram);
+//				JOptionPane.showMessageDialog(null, checkedPaths.length, "", JOptionPane.ERROR_MESSAGE); 
 				modelCreator.createModelStructureInMagicdraw(checkedPaths);
 			}
 		});

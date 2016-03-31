@@ -82,6 +82,8 @@ public class ModelInstanceGenerator {
 		SessionManager.getInstance().createSession(
 				theComponent.getComponentName());
 		ElementsFactory factory = activeProject.getElementsFactory();
+//
+		
 		String name = theComponent.getComponentName() + "_ToDo";
 
 		PackageableElement existingRootElement = checkExistingPackage(name);
@@ -138,7 +140,7 @@ public class ModelInstanceGenerator {
 				} else if (modelType.getModelType().equals(
 						PlugInConstants.SELECTED_FEATURE_MODEL)) {
 					new FeatureConfigurationModelBuilder(modelType,
-							subMagicDrawPackage, theComponent, activeProject);
+							subMagicDrawPackage, theComponent, activeProject, featureManager.getAllSelectedFeatures() );
 				} else if (modelType.getModelType().equals(
 						PlugInConstants.TOPOLOGY_MODEL)) {
 					new ModelBuilder(modelType, subMagicDrawPackage,

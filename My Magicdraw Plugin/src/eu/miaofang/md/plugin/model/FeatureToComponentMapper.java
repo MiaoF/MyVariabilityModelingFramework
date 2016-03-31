@@ -56,4 +56,12 @@ public class FeatureToComponentMapper {
 	public RootComponent getRootComponent() {
 		return rootComponent;
 	}
+
+	public List<SelectedFeature> getAllSelectedFeatures() {
+		return allSelectedFeatures;
+	}
+
+	public List<SelectedFeature> getNonMatchingFeatures() {
+		return nonMatchingFeatures;
+	}
 }

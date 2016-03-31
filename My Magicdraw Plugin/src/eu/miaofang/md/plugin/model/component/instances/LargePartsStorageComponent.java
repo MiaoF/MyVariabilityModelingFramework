@@ -12,7 +12,7 @@ public class LargePartsStorageComponent extends CompositeComponent{
 		setComponentName("MPL");
 		modelSuite.setModelPakcageName(this.getComponentName());
 		addNewModelType(new WmsModel("MPL-TopologyModel", PlugInConstants.TOPOLOGY_MODEL));
-		addNewModelType(new WmsModel("MPL-OrderProcessing", PlugInConstants.PROCESS_MODEL, "MplOrderProcessing-Template"));
+		addNewModelType(new WmsModel("MPL-OrderProcessing", PlugInConstants.PROCESS_MODEL, "Mpl-OrderProcessing-Template"));
 		addNewModelType(new WmsModel("MPL-ReleasePartialOrder", PlugInConstants.PROCESS_MODEL));
 		addNewModelType(new WmsModel("MPL-ReleaseOrder", PlugInConstants.PROCESS_MODEL));
 		addNewModelType(new WmsModel("MPL-RetrieveOrder", PlugInConstants.PROCESS_MODEL));

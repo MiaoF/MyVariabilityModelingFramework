@@ -75,12 +75,12 @@ public class CheckTreeManager extends MouseAdapter implements
 	} 
 	
 	private FeatureTreeNode findFeatureWithTheSameName(FeatureTreeNode treeNode, String elmentName) {
-		if(treeNode.toString().equalsIgnoreCase(elmentName))
+		if(elmentName.contains(treeNode.toString()))
 			return treeNode;
 		int numberOfChildren = treeNode.getChildCount();
 		for(int i = 0; i< numberOfChildren; i++) {
 			FeatureTreeNode child = (FeatureTreeNode) treeNode.getChildAt(i);
-			if(child.toString().equalsIgnoreCase(elmentName))
+			if(elmentName.contains(child.toString()))
 				return child;
 			if(child.getChildCount() > 0) {
 				FeatureTreeNode node = findFeatureWithTheSameName(child, elmentName);

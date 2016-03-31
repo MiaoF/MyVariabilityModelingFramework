@@ -11,7 +11,7 @@ import com.nomagic.actions.AMConfigurator;
 
 public class BrowserContextConfigurator implements BrowserContextAMConfigurator {
  
-    public final static String FEATURE_PLUGIN_MENU_CATEGORY = "WMS Variability Modeling";
+    public final static String FEATURE_PLUGIN_MENU_CATEGORY = "IAM Variability Modeling";
     public final static String FEATURE_PLUGIN_MENU_ID = "FeatureEditor";
 
     private NMAction action;
@@ -30,7 +30,7 @@ public class BrowserContextConfigurator implements BrowserContextAMConfigurator 
         }
         category.addAction(action);
 
-    }
+   }
     
     public int getPriority() {
         return AMConfigurator.MEDIUM_PRIORITY;
