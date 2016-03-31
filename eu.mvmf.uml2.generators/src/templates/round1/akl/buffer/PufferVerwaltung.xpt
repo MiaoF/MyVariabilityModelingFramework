@@ -264,7 +264,6 @@ namespace Sgm.Akl.Puffer
 «ENDFILE»
 «ENDDEFINE»
 
-
 «DEFINE bufferElement FOR Buffer»«getRelationships().typeSelect(TransportsFrom).get(0).locationID»«ENDDEFINE»
 
 

@@ -56,7 +56,7 @@ namespace Sgm.Akl.AutomatikTransporte
       // Unreservierte Einlagerplätze laden
       LocationQuery unreservierteEinlagerPlaetze = ReservationModification.GetArivableLocations("unresLocs", tu.Name);
       unreservierteEinlagerPlaetze.Where(Expression.Or(
-      		Location.Properties.Name.Filter(1254),Location.Properties.Name.Filter(1264),Location.Properties.Name.Filter(1274)
+      		Location.Properties.Name.Filter(1254),Location.Properties.Name.Filter(1264),Location.Properties.Name.Filter(1274),Location.Properties.Name.Filter(1254),Location.Properties.Name.Filter(1264),Location.Properties.Name.Filter(1274)
       ));
       IList<Location> unresEinlagerPlaetze = DataAccess.ExecuteQuery(unreservierteEinlagerPlaetze, row => (Location) row[unreservierteEinlagerPlaetze.LocationAlias.AliasName]);
 

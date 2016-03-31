@@ -64,8 +64,6 @@ namespace Sgm.Akl.Puffer
     public SgmLocation ErmittleFreienPufferPlatz(SgmTu sgmTu)
     {
       
-      Location pufferGasse = SgmPhysik.GetLocationByName("BUFFER_GASSE");
-	  
       if(pufferGasse == null)
       {
         throw new LocationNotFoundException("BUFFER_GASSE");

@@ -1,4 +1,4 @@
-package impl.plugin.md;
+package eu.miaofang.md.plugin.report;
 
 import com.nomagic.actions.ActionsManager;
 import com.nomagic.magicdraw.actions.BrowserContextAMConfigurator;
@@ -9,27 +9,27 @@ import com.nomagic.actions.NMAction;
 import com.nomagic.magicdraw.actions.MDActionsCategory;
 import com.nomagic.actions.AMConfigurator;
 
-public class ModelExportContextConfigurator implements BrowserContextAMConfigurator {
+public class AnotherBrowserContextConfigurator implements BrowserContextAMConfigurator {
  
-    public final static String EXPORT_PLUGIN_MENU_CATEGORY = "IAM Derivation";
-    public final static String  EXPORT_MENU_ID = "Export Model to Folder";
+    public final static String REPORTER_PLUGIN_MENU_CATEGORY = "IAM Report Status";
+    public final static String REPORTER_MENU_ID = "ModelStatusReporter";
 
     private NMAction action;
 
-    public ModelExportContextConfigurator(NMAction nmAction) {
+    public AnotherBrowserContextConfigurator(NMAction nmAction) {
         this.action = nmAction;
     }
 
     public void configure(ActionsManager mngr, Tree tree) {
 
-        ActionsCategory category = (ActionsCategory) mngr.getActionFor(EXPORT_MENU_ID);
+        ActionsCategory category = (ActionsCategory) mngr.getActionFor(REPORTER_MENU_ID);
         if (category == null) {
-            category = new MDActionsCategory(EXPORT_MENU_ID, EXPORT_PLUGIN_MENU_CATEGORY);
+            category = new MDActionsCategory(REPORTER_MENU_ID, REPORTER_PLUGIN_MENU_CATEGORY);
             category.setNested(true);
             mngr.addCategory(category);
+
         }
         category.addAction(action);
-
     }
     
     public int getPriority() {

@@ -223,6 +223,23 @@ namespace Sgm.Akl.AutomatikTransporte
 
       InformObservers(call => call.TransportAbgeschlossen((SgmTu)transportee, tord));
 	 
+      // Wenn die Tu gepuffert wurde
+      // This line need to be further refactored, but not very relevant to the research.
+      //if (tord.LocationNameTo.StartsWith("XX") || tord.LocationNameTo.StartsWith("XX"))
+      {
+        InformObservers(call => call.TuGepuffert((SgmTu)transportee));
+      }
+      // Tu ist aus dem Puffer abgerufen worden.
+      if (tord.LocationNameTo.Equals("1360"))
+      {
+        transportee.LocName = "ZUSAMMENFUEHRPLATZ_AKL";
+        SgmPhysik.UpdateTu(transportee);
+
+        _log.InfoFormat("Tu [{0}] wurde aus dem AKL-Puffer gefahren und auf ZUSAMMENFUEHRPATZ_AKL gebucht.",
+                       transportee.Name);
+        InformObservers(call => call.TuAmZusammenfuehrPlatz((SgmTu)transportee));
+      }
+      
 
       VersucheEinlagerSperreZuLoeschen(tord);
     }
@@ -301,7 +318,7 @@ namespace Sgm.Akl.AutomatikTransporte
       //Die Locations, für die die ArbeitsplatzVerwaltung informiert werden muss, falls sich eine Tu dort meldet.
       //IList<string> rbgAbgabeplaetze = new List<string>() { "1255", "1265", "1275" };
       IList<string> rbgAbgabeplaetze = new List<string>() { 
-      
+      "1255","1275","1265"
 	  };
 
       if (rbgAbgabeplaetze.Contains(target.Name))
@@ -315,7 +332,7 @@ namespace Sgm.Akl.AutomatikTransporte
       //Die Locations, an der der Eintrag in der AuslagerQueue gelöscht wird, falls sich eine Tu dort meldet.
       //IList<string> auslagerstichVtwUebergabe= new List<string>() { "1256", "1266", "1276" };
        IList<string> auslagerstichVtwUebergabe = new List<string>() {
-       		
+       		"1276","1266","1256"
 	  };
 			  
       if (auslagerstichVtwUebergabe.Contains(target.Name))
@@ -326,7 +343,9 @@ namespace Sgm.Akl.AutomatikTransporte
 
       //Die Locations, für die die ArbeitsplatzVerwaltung informiert werden muss, falls sich eine Tu dort meldet.
       //IList<string> arbeitsplatzStiche = new List<string>() { "1230", "1220", "1210" };
-      IList<string> arbeitsplatzStiche = new List<string>() {   };
+      IList<string> arbeitsplatzStiche = new List<string>() {  "1210","1220","1230" };
+
+		
 
       // Die Locations der Arbeitsplaetze selbst
       IList<string> locationsDieNurEinfachBelegtWerdenKoennen = 
@@ -336,7 +355,7 @@ namespace Sgm.Akl.AutomatikTransporte
        //                     "1276", "1266", "1256", 
        //                     "1239", "1229", "1219",
        //                     "RBG001E", "RBG001A", "RBG002E", "RBG002A", "RBG003E", "RBG003A", };
-      new List<string>() {};
+      new List<string>() {"1254","1264","1274","1276","1266","1256","1219","1214","1229","1225","1239","1234","RBG001E","RBG001A","RBG002E","RBG002A","RBG003E","RBG003A",};
 
       if (arbeitsplatzStiche.Contains(target.Name))
       {
@@ -358,12 +377,12 @@ namespace Sgm.Akl.AutomatikTransporte
       }
 
       //Tu befindet sich am Pufferausgang und hat keinen Tord
-      if (target.Name == "" && tord == null)
+      if (target.Name == "1330" && tord == null)
       {
         //wurde eine Tu ohne Auftragsbezug gefahren, wird sie hier zu NIO gebucht.
         if (!IstTuAuftragZugeordnet((SgmTu)transportee))
         {
-          _log.WarnFormat("Tu [{0}] wird auf NIO gebucht, da sie sich auf [] ohne Auftragbezug befindet",
+          _log.WarnFormat("Tu [{0}] wird auf NIO gebucht, da sie sich auf [1330] ohne Auftragbezug befindet",
                           transportee.Name);
 
           transportee.LocName = "NIO";
@@ -537,7 +556,7 @@ namespace Sgm.Akl.AutomatikTransporte
       // Lagerfach gesucht werden
       //
       //IList<string> uebergabePlaetze = new List<string>() { "1219", "1229", "1239" };
-		IList<string> uebergabePlaetze = new List<string>() { };
+		IList<string> uebergabePlaetze = new List<string>() { "1219","1229","1239"};
 
       if (uebergabePlaetze.Contains(source.Name))
       {
@@ -644,6 +663,15 @@ namespace Sgm.Akl.AutomatikTransporte
     {
       switch(name)
       {
+     
+     case "1255":
+     	return "1256";
+     
+     case "1265":
+     	return "1266";
+     
+     case "1275":
+     	return "1276";
      
         default:
           throw new ArgumentException(name + " ist keine Auslager Location", "name");

@@ -100,7 +100,7 @@ namespace Sgm.Akl.Puffer
     public PufferVerwaltung()
     {
       //Timer beenden
-      ZyklusZeit = 0;
+      ZyklusZeit = ;
     }
 
     private void TuPuffern(SgmTu transportee, IDictionary<string, string> additionalPlcData)
@@ -137,7 +137,7 @@ namespace Sgm.Akl.Puffer
     /// </summary>
     public override void ZyklischeAktion()
     {
-      IList<SgmTu> tus = DataAccess.SelectAll<SgmTu>(SgmTu.Properties.LocName.Filter("1330"));
+      IList<SgmTu> tus = DataAccess.SelectAll<SgmTu>(SgmTu.Properties.LocName.Filter(""));
 
       if (tus.Count == 0)
       {
@@ -237,7 +237,7 @@ namespace Sgm.Akl.Puffer
     {
       //SgmLocation ausschleusPlatz = (SgmLocation)SgmPhysik.GetLocationByName(ConstDirectory.LOC_NAME_1360);
       
-      SgmLocation ausschleusPlatz = (SgmLocation)SgmPhysik.GetLocationByName(1350);
+      SgmLocation ausschleusPlatz = (SgmLocation)SgmPhysik.GetLocationByName(13501350);
 	  
       MoveType moveType = DataAccess.SelectFirst<MoveType>(MoveType.Properties.No.Filter(ConstDirectory.MOVE_TYPE_NO_AUSLAGERUNG));
 

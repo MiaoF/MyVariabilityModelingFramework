@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<workflow>
+<property name="path" value="src/workflow/workflow-gen/" />
+<property name="modelPath" value="eu.mvmf.uml2.generators/src/model" />
+<!-- set up EMF for standalone execution -->
+<bean class="org.eclipse.emf.mwe.utils.StandaloneSetup" platformUri=".." />
+
+<!-- prepare for performing uml -->
+<bean class="org.eclipse.xtend.typesystem.uml2.Setup" standardUML2Setup="true" />
+    
+     
+ <!--UML2 Profile - Metamodell-->
+ <bean id="mm_profiles" class="org.eclipse.xtend.typesystem.uml2.profile.ProfileMetaModel">
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ComponentMetaModel.profile.uml"/>
+  <profile value="platform:/resource/${modelPath}/FeatureMetaModel.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.TopologyProfile.profile.uml"/>
+  <profile value="platform:/resource/eu.mvmf.uml2.generators/src/model/ApplicationEngineeringEditors.ProcessProfile.profile.uml"/>
+ </bean>
+ 
+
+<!-- load model and store it in slot 'model' -->
+<component class="org.eclipse.emf.mwe.utils.Reader">
+  <uri value="platform:/resource/eu.mvmf.uml2.generators/src/model/SgmConfiguration.uml" />
+  <modelSlot value="model" />
+</component>
+
+<!-- load model and store it in slot 'model' -->
+<component class="org.eclipse.emf.mwe.utils.Reader">
+  <uri value="platform:/resource/${modelPath}/SgmConfiguration.uml" />
+  <modelSlot value="model" />
+</component>
+
+<component id="workflow-generator" class="org.eclipse.xpand2.Generator" skipOnErrors="true">
+  <metaModel idRef="mm_profiles"/>
+  <expand value="templates::round0::Workflow_exp::Root FOR model"/>
+  <fileEncoding value="ISO-8859-1"/>
+  <outlet path="${path}">
+   <postprocessor class="org.eclipse.xpand2.output.JavaBeautifier"/>
+  </outlet>
+</component>
+</workflow>
+
+

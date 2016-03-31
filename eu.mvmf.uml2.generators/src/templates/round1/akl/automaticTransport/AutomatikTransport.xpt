@@ -352,6 +352,8 @@ namespace Sgm.Akl.AutomatikTransporte
       //IList<string> arbeitsplatzStiche = new List<string>() { "1230", "1220", "1210" };
       IList<string> arbeitsplatzStiche = new List<string>() {  «EXPAND goodsInRegistrationWorkstation FOREACH allOwnedElements().typeSelect(LightLoadWorkstation) SEPARATOR ','» };
 
+		
+
       // Die Locations der Arbeitsplaetze selbst
       IList<string> locationsDieNurEinfachBelegtWerdenKoennen = 
        // new List<string>() {"1234", "1225", "1214",
